@@ -57,7 +57,7 @@ module Generator
       it "should create a service class when all the necessary command_line options are provided" do
         should_not_have_output(output)
     
-        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", "../spec/generator/out", "--service-output-dir", "../spec/generator/out", "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
+        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__), "out"), "--service-output-dir", "../spec/generator/out", "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
 	cmd_line.run args
         File.exists?(File.join(File.dirname(__FILE__), "out/allstar_txt_service.rb")).should == true
       end
