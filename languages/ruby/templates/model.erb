@@ -1,0 +1,9 @@
+#---------------------------------------------------------------------
+# Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
+# Using Generator 0.1.1
+#---------------------------------------------------------------------
+<% first = true -%>
+class <%= @model_class_def.name.camelize %>
+  attr_accessor <% @model_class_def.properties.each do |e| %><% if !first %>,<% else  first = false end -%> :<%= e.name -%><% end %>
+
+end

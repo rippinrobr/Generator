@@ -1,0 +1,44 @@
+#---------------------------------------------------------------------
+# Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
+# Using Generator 0.1.1
+#---------------------------------------------------------------------
+require './<%= @settings.class_name -%>'
+
+class <%= @domain_class_name.camelize %>
+  def initialize(gen_source = '')
+    @gen_source = gen_source
+    @content = []
+  end
+
+  def all()
+    raise "Cannot open a nil source" unless !@gen_source.nil?    
+    
+    begin
+      File.open(@gen_source) do |f|
+        while(line = f.readline)
+          line.chomp
+	  parts = line.gsub(/"/,'').split(',')
+
+	  <% i = 0 -%>
+  	  model = <%= @settings.class_name.clean_name.camelize -%>.new 
+	  <% @settings.columns.each do |col| -%>
+	model.<%= col.field_name %> = parts[<%= i -%>]
+	  <% i += 1
+	  end %>
+ 	  @content << model
+        end
+      end 
+    rescue Errno::ENOENT => e 
+      puts "Unable to open source #{@gen_source}"
+      return nil
+    rescue EOFError 
+    end
+
+    @content
+  end
+<% @settings.columns.each do |col| %>
+  def find_by_<%= col.field_name -%>(val)
+    @content.keep_if { |a| a.<%= col.field_name + data_type_conversion(col.field_type) -%> == val }
+  end
+ <% end %>
+end
