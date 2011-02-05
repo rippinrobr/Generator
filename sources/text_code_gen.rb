@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), "text_elements_service")
-require File.join(File.dirname(__FILE__), "models/model_class_definition")
-require File.join(File.dirname(__FILE__), "models/domain_src_settings")
-require File.join(File.dirname(__FILE__), "parsers/read_raw_input")
+require File.join(File.dirname(__FILE__), "../lib/models/model_class_definition")
+require File.join(File.dirname(__FILE__), "../lib/models/domain_src_settings")
+require File.join(File.dirname(__FILE__), "../lib/parsers/read_raw_input")
 require File.join(File.dirname(__FILE__), "../languages/model_generator")
 require File.join(File.dirname(__FILE__), "../languages/domain_src_generator")
 
