@@ -1,0 +1,40 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   WindowStyle="SingleBorderWindow"
+   WindowState="Normal"
+   ResizeMode="CanResizeWithGrip"
+   Title="IronRuby DAL Code Generator - Class Viewer"
+   Height="400"
+   Width="600" 
+   >
+   <ScrollViewer HorizontalScrollBarVisibility="Auto">
+ 	<StackPanel Margin="15,0,0,0">
+           <Grid>
+	     <Grid.RowDefinitions>
+      	       <RowDefinition Height="Auto"/>
+      	       <RowDefinition Height="25"/>
+               <RowDefinition Height="Auto"/>
+               <RowDefinition />
+             </Grid.RowDefinitions>
+
+             <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="100"/>
+               <ColumnDefinition/>
+             </Grid.ColumnDefinitions>
+           <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0" FontSize="24" FontWeight="Bold">Create the Model</TextBlock>
+              <Label Grid.Row="1" Grid.Column="0">Class Name:*</Label>
+   	      <TextBox Grid.Row="1" Grid.Column="1" x:Name="classNameTxtBox" Width="250"/>
+	      <Label Grid.Row="2" Grid.Column="0">Properties</Label>
+              <StackPanel Grid.Row="2" Grid.Column="1" x:Name="propertiesStackPanel">
+     </StackPanel>
+	   </Grid>
+  <StackPanel Orientation="Horizontal" Margin="10">
+      <Button x:Name="runBtn">Generate Code</Button>
+      <Button x:Name="cancelBtn">Cancel</Button>
+   </StackPanel>
+  
+           <!--Ellipse Fill="Green" Height="1000" Width="2000" /-->
+	
+	</StackPanel>
+   </ScrollViewer>
+</Window>

@@ -1,0 +1,127 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   Title="IronRuby DAL Code Generator - Class Viewer"
+   >
+  <Grid>
+   <TabControl x:Name="mainTabControl">
+     <TabItem Header="Step 0. Settings">
+      <StackPanel>
+	<TextBlock Margin="10,10,0,0" FontSize="18" FontWeight="Bold">Select Input Source</TextBlock>
+        <Border BorderThickness="1" Padding="5,5,0,5" BorderBrush="#ffcccccc" CornerRadius="3">
+          <StackPanel Margin="5" Orientation="Horizontal">
+ 	    <RadioButton GroupName="source" x:Name="dbRb" Margin="0,0,10,0" >DB</RadioButton>
+	    <StackPanel>
+ 	      <RadioButton GroupName="source" x:Name="textRb" >TextFile</RadioButton>
+              <StackPanel x:Name="textSourcePathStackPanel" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+	          <TextBlock Margin="0,10,10,0">Path to Source File:</TextBlock>
+                  <TextBox Margin="0,10,0,0" x:Name="textFilePathTxtBox" Width="400"/>
+	        </StackPanel>
+                <StackPanel Orientation="Horizontal">
+	 	  <TextBlock Margin="0,10,0,0">Has Header Row?</TextBlock>
+                  <CheckBox Margin="20,10,0,0" x:Name="hasHeaderCheckBox" />
+	        </StackPanel>
+              </StackPanel>
+	    </StackPanel>
+          </StackPanel>
+	</Border>
+	<TextBlock Margin="10,10,0,0" FontSize="18" FontWeight="Bold">Select Language</TextBlock>
+        <Border BorderThickness="1" Padding="5,5,0,5" BorderBrush="#ffcccccc" CornerRadius="3">
+          <StackPanel Margin="5" Orientation="Horizontal">
+           <RadioButton GroupName="Languages" Margin="0,0,10,0" x:Name="cSharpRB">C#</RadioButton>
+           <RadioButton GroupName="Languages" x:Name="rubyRB">Ruby</RadioButton>
+          </StackPanel> 
+	</Border>
+	<TextBlock Margin="10,10,0,0" FontSize="18" FontWeight="Bold">Select Code to Generate</TextBlock>
+        <Border BorderThickness="1" Padding="5,5,0,5" BorderBrush="#ffcccccc" CornerRadius="3">
+          <StackPanel Margin="5">
+            <StackPanel Orientation="Horizontal" >
+             <TextBlock FontWeight="Bold">Models:</TextBlock>
+ 	     <RadioButton GroupName="modelOutput" x:Name="emitRB" Margin="10,0,10,0" >Emit</RadioButton>
+ 	     <RadioButton GroupName="modelOutput" x:Name="srcRB" Margin="10,0,10,0" >Source</RadioButton>
+	    </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+             <TextBlock FontWeight="Bold">Domain:</TextBlock>
+ 	     <CheckBox x:Name="generateDomainCB" Margin="10,0,10,0" IsChecked="true">Generate Source Code?</CheckBox>
+	    </StackPanel>
+          </StackPanel>
+        </Border>
+	<StackPanel Margin="10,10,0,0" Orientation="Horizontal">
+           <Button x:Name="saveSettingsBtn">Next</Button>
+	</StackPanel>
+      </StackPanel>
+     </TabItem>
+     <TabItem x:Name="defineClassTab" Header="Step 1. Define Class">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto">
+ 	<StackPanel Margin="15,0,0,0">
+           <Grid>
+	     <Grid.RowDefinitions>
+      	       <RowDefinition Height="Auto"/>
+      	       <RowDefinition Height="25"/>
+               <RowDefinition Height="Auto"/>
+               <RowDefinition />
+             </Grid.RowDefinitions>
+
+             <Grid.ColumnDefinitions>
+               <ColumnDefinition Width="100"/>
+               <ColumnDefinition/>
+             </Grid.ColumnDefinitions>
+             
+	     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0" FontSize="18" FontWeight="Bold">Edit Class Name and Property Definitions</TextBlock>
+             <Label Grid.Row="1" Grid.Column="0">Class Name:*</Label>
+   	     <TextBox Grid.Row="1" Grid.Column="1" x:Name="classNameTxtBox" Width="250"/>
+	     <Label Grid.Row="2" Grid.Column="0">Properties</Label>
+             <StackPanel Grid.Row="2" Grid.Column="1" x:Name="propertiesStackPanel">
+             </StackPanel>
+	   </Grid>
+   	   <StackPanel Orientation="Horizontal" Margin="10">
+             <Button x:Name="saveClassDefBtn">Save Class Definition</Button>
+             <Button x:Name="cancelBtn">Cancel</Button>
+   	   </StackPanel>
+	</StackPanel>
+      </ScrollViewer>
+    </TabItem>
+    <TabItem x:Name="outputSettingsTab" Header="Step 2. Output Settings">
+      <StackPanel>
+  	<TextBlock Margin="10" FontSize="18" FontWeight="Bold">Output Settings</TextBlock>
+  	<Grid Margin="10,0,0,10">
+   	  <Grid.RowDefinitions>
+      	    <RowDefinition Height="25"/>
+      	    <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+      	    <RowDefinition Height="25"/>
+      	    <RowDefinition Height="25"/>
+          </Grid.RowDefinitions>
+
+          <Grid.ColumnDefinitions>
+      	    <ColumnDefinition Width="140"/>
+            <ColumnDefinition/>
+   	  </Grid.ColumnDefinitions>
+
+   	  <Label>Assembly Name:*</Label>
+   	  <TextBox Grid.Column="1" x:Name="assemblyNameTxtBox" />
+
+   	  <Label Grid.Row="1">Model Namespace:*</Label>
+   	  <TextBox Grid.Row="1" Grid.Column="1" x:Name="modelNamespaceTxtBox"/>
+
+   	  <Label Grid.Row="2">Domain Namespace:*</Label>
+   	  <TextBox Grid.Row="2" Grid.Column="1" x:Name="domainNamespaceTxtBox"/>
+
+   	  <Label Grid.Row="3">Domain Src Output Dir:</Label>
+   	  <TextBox Grid.Row="3" Grid.Column="1" x:Name="domainSrcOutputDirTxtBox"/>
+
+          <Label Grid.Row="4">DLL Output Dir:</Label>
+   	  <TextBox Grid.Row="4" Grid.Column="1" x:Name="dllOutputDirTxtBox"/>
+	
+   	  <Label Grid.Row="5">Import Namespaces:</Label>
+   	  <TextBox Grid.Row="5" Grid.Column="1" x:Name="importNamespacesTxtBox"/>
+	</Grid>
+   	<StackPanel Margin="10,0,10,10" x:Name="buttonStackPanel" Orientation="Horizontal">
+      	  <Button x:Name="generateBtn">Generate Code</Button>
+   	</StackPanel>
+      </StackPanel>
+    </TabItem>
+  </TabControl>
+  </Grid>
+</Window>

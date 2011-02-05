@@ -1,0 +1,7 @@
+<NavigationWindow
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ShowsNavigationUI="true"
+Source="file://c:/code/research/ironrubyassemblybuilder/ir_codegen/libs/views/page_class_viewer.xaml"
+/>
+
