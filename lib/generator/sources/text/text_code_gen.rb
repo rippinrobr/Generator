@@ -1,9 +1,9 @@
-require File.join(File.dirname(__FILE__), "text_elements_service")
-require File.join(File.dirname(__FILE__), "../lib/models/model_class_definition")
-require File.join(File.dirname(__FILE__), "../lib/models/domain_src_settings")
-require File.join(File.dirname(__FILE__), "../lib/parsers/read_raw_input")
-require File.join(File.dirname(__FILE__), "../languages/model_generator")
-require File.join(File.dirname(__FILE__), "../languages/domain_src_generator")
+require_relative "text_elements_service"
+require_relative "../../models/model_class_definition"
+require_relative "../../models/domain_src_settings"
+require_relative "../../parsers/read_raw_input"
+require_relative "../../languages/model_generator"
+require_relative "../../languages/domain_src_generator"
 
 module Generator
   class Engine
@@ -22,7 +22,7 @@ module Generator
     def create_models
       if @options[:model_output].to_s == "emit"
 	if OS::has_dotnet?
-  	  require File.join(File.dirname(__FILE__), "emit_helpers.rb")
+  	  require_relative "../../lib/generator/herlpers/emit_helpers.rb"
 	  params = Hash.new
           params[:options] = @options
           params[:service] = @elements_service

@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), "../lib/models/model_class_definition")
-require File.join(File.dirname(__FILE__), "../lib/models/prop")
+require_relative "../../models/model_class_definition"
+require_relative "../../models/prop"
 
 class TextProperty
   #table_name

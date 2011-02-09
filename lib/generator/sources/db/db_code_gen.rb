@@ -1,5 +1,5 @@
 require File.join(File.dirname(__FILE__), "os")
-require File.join(File.dirname(__FILE__), "emit_helpers")
+require_relative "../../lib/helpers/emit_helpers"
 require File.join(File.dirname(__FILE__), "src_helpers")
 require File.join(File.dirname(__FILE__), "parsers/record_class")
 require File.join(File.dirname(__FILE__), "parsers/property_info")

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../string'
+require_relative '../utils/string'
 require File.dirname(__FILE__) + '/record_class'
 require File.dirname(__FILE__) + '/property_info'
 require 'pathname'
@@ -7,7 +7,7 @@ class ReadRawInput
   attr_accessor :input_type, :location
 
   def initialize(input_type, location, language, has_headings=false, delim=',')
-    require File.dirname(__FILE__) + "/../../languages/#{language}/string"
+    require File.dirname(__FILE__) + "../../languages/#{language}/string"
 
     @input_type = input_type
     @location = location

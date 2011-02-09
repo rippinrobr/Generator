@@ -1,13 +1,12 @@
 require 'spec_helper'
 
 def check_for_print_usage(output)
-  #output.should_receive(:puts).with('Required Options Missing')
-  check_output(output)
-end
+#  check_for_print_usage(output)
+#end
 
-def check_output(output)
+#def check_for_print_usage(output)
   output.should_receive(:puts).with('Required Options:')
-  output.should_receive(:puts).with('--input-type, -i  db|text')
+  output.should_receive(:puts).with('--input-type, -i  db|url|text')
   output.should_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
   output.should_receive(:puts).with('--language, -l    ruby|c_sharp')
   output.should_receive(:puts).with('')
@@ -41,7 +40,7 @@ module Generator
        it "with 1 required field (--input-type ) and 1 non-required should display help" do
          args = [ "--input-type","tex", "--face", "lift" ]
   	 output.should_receive(:puts).with("'tex' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: text, db") 
+  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
 	 cmd_line.run args
        end
 
@@ -52,8 +51,8 @@ module Generator
        end
 
        it "with 1 required field (--language ) and 1 non-required should display help" do
-         check_for_print_usage(output)
          args = [ "--language","c_sharp", "--face", "lift" ]
+  	 check_for_print_usage(output)
 	 cmd_line.run args
        end
 
@@ -81,7 +80,7 @@ module Generator
 
        it "with both required options but with a non-supported input type (--input-type zip)" do
   	 output.should_receive(:puts).with("'zip' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: text, db") 
+  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
 
          args = [ "--language","ruby", "--input-type", "zip" ]
 	 cmd_line.run args
@@ -89,7 +88,7 @@ module Generator
 
        it "with both required options but with a non-supported input_source (-i zip)" do
   	 output.should_receive(:puts).with("'zip' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: text, db") 
+  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
 
          args = [ "-i", "zip",  "--language","c_sharp"]
 	 cmd_line.run args
@@ -212,13 +211,13 @@ module Generator
       end
 
       it "should display the command-line options when the -h option is used" do
-	check_output(output)
+	check_for_print_usage(output)
         args = ["-h"]
         cmd_line.run args
       end
 
       it "should display the command-line options when the --help option is used" do
-	check_output(output)
+	check_for_print_usage(output)
         args = ["--help"]
         cmd_line.run args
       end
@@ -227,7 +226,7 @@ module Generator
     describe "2 layer option validations" do
       it "should display an error message when input type is text but no --source-file option has been provided" do 
         output.should_receive(:puts).with('A path to a source file is required')
-	check_output(output)
+	check_for_print_usage(output)
    
         args = ["-l", "ruby", "-i", "text"]
 	cmd_line.run args
@@ -236,7 +235,7 @@ module Generator
       it "should display an error message when input type is text and an invalid file was provided with --source-file option" do
         output.should_receive(:puts).with("ERROR: '/lib/abcd' Is not a valid file.")
         output.should_receive(:puts).with('--source-file, -sf require a valid path to a file')
-	check_output(output)
+	check_for_print_usage(output)
    
         args = ["-l", "ruby", "-i", "text", "--source-file", '/lib/abcd']
 	cmd_line.run args
@@ -245,7 +244,7 @@ module Generator
       it "should display an error message when input type is text and an invalid file was provided with -sf option" do
         output.should_receive(:puts).with("ERROR: '/zzz/fred.txt' Is not a valid file.")
         output.should_receive(:puts).with('--source-file, -sf require a valid path to a file')
-	check_output(output)
+	check_for_print_usage(output)
    
         args = ["-l", "ruby", "-i", "text", "-sf", "/zzz/fred.txt"]
 	cmd_line.run args

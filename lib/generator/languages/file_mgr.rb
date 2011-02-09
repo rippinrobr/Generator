@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + "/../lib/string"
-require File.join(File.dirname(__FILE__), "/../lib/os")
+require_relative "../utils/string"
+require_relative "../utils/os"
 
 module FileMgr
   def set_output_file_path(output_dir, class_name, file_ext)

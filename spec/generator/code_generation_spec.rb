@@ -4,7 +4,8 @@ module Generator
   describe CmdLine do
     def check_output(output)
       output.should_receive(:puts).with('Required Options:')
-      output.should_receive(:puts).with('--input-type, -i  db|text')
+      output.should_receive(:puts).with('--input-type, -i  db|url|text')
+      output.should_receive(:puts).with('	when using url -url followed by a valid URI to the input is required')
       output.should_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
       output.should_receive(:puts).with('--language, -l    ruby|c_sharp')
       output.should_receive(:puts).with('')
@@ -20,7 +21,7 @@ module Generator
  
     def should_not_have_output(output)
       output.should_not_receive(:puts).with('Required Options:')
-      output.should_not_receive(:puts).with('--input-type, -i  db|text')
+      output.should_not_receive(:puts).with('--input-type, -i  db|url|text')
       output.should_not_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
       output.should_not_receive(:puts).with('--language, -l    ruby|c_sharp')
       output.should_not_receive(:puts).with('')
@@ -49,7 +50,7 @@ module Generator
       it "should create a model class when all the necessary command line options are provided" do
         should_not_have_output(output)
     
-        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", "../spec/generator/out", "--service-output-dir", "../spec/generator/out", "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
+        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__),"../generator/out"), "--service-output-dir", File.join(File.dirname(__FILE__), "../generator/out"), "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
 	cmd_line.run args
         File.exists?(File.join(File.dirname(__FILE__), "out/allstar_txt.rb")).should == true
       end
@@ -57,7 +58,7 @@ module Generator
       it "should create a service class when all the necessary command_line options are provided" do
         should_not_have_output(output)
     
-        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__), "out"), "--service-output-dir", "../spec/generator/out", "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
+        args = ["-m", "src", "-l", "ruby", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__), "out"), "--service-output-dir", File.join(File.dirname(__FILE__),"../generator/out"), "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
 	cmd_line.run args
         File.exists?(File.join(File.dirname(__FILE__), "out/allstar_txt_service.rb")).should == true
       end

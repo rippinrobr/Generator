@@ -2,6 +2,7 @@ require File.join(File.dirname(__FILE__), 'step_helper.rb')
 @args = []
 @model_out_dir   = ''
 @service_out_dir = ''
+
 Given /^I've selected "([^"]*)" as my output language$/ do |language|
   @args = ["-l",language]
 end

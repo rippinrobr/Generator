@@ -1,8 +1,8 @@
-require File.join(File.dirname(__FILE__),'../../lib/string')
-require File.join(File.dirname(__FILE__),'../file_mgr')
-require File.join(File.dirname(__FILE__),'string')
-require File.join(File.dirname(__FILE__),'helpers')
-require File.join(File.dirname(__FILE__),'language_settings')
+require_relative '../../utils/string'
+require_relative '../file_mgr'
+require_relative 'string'
+require_relative 'helpers'
+require_relative 'language_settings'
 require 'etc'
 require 'erb'
 

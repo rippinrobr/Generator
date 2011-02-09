@@ -10,15 +10,13 @@ module Generator
       @options[:language]       = nil
 
       @valid_languages            = []
-      @valid_input_types          = ["text", "db"]
+      @valid_input_types          = []
       @valid_model_output_options = ["emit", "src"]
 
       @error_messages    = [] 
 
-      base_dir = File.join(File.dirname(__FILE__), '../languages/')
-      Dir.foreach(base_dir) do |dir|
-        @valid_languages << dir if File.directory?("#{base_dir}#{dir}") && dir != ".." && dir != "."
-      end
+      get_valid_languages
+      get_valid_sources
     end
 
     def run(args=[])
@@ -27,11 +25,14 @@ module Generator
         return
       end
 
-      if(process_args(args)) 
-        require File.join(File.dirname(__FILE__), "../sources/#{@options[:input_type]}_code_gen")
+      @has_required_options = false
+      if(process_args(args))
+        require File.join(File.dirname(__FILE__), "sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen")
+
         engine = Engine.new @options
         engine.create_models unless @options[:model_output_dir].nil?
         engine.create_service_classes unless @options[:service_output_dir].nil?
+
       else
         @error_messages.each { |e| @output.puts e }
         print_usage
@@ -41,7 +42,8 @@ module Generator
     private
     def print_usage()
       @output.puts 'Required Options:'
-      @output.puts '--input-type, -i  db|text'
+      @output.puts '--input-type, -i  db|url|text'
+      @output.puts '	when using url -url followed by a valid URI to the input is required'
       @output.puts '	when using text --source-file or -sf followed by a path to the input file is required'
       @output.puts '--language, -l    ruby|c_sharp'
       @output.puts ''
@@ -110,7 +112,7 @@ module Generator
             @options[:quiet] = true
         end
       end
-      @missing_required_option = !@options[:input_type].nil? && !@options[:language].nil?
+      @has_required_options = !@options[:input_type].nil? && !@options[:language].nil?
     end
 
 private
@@ -120,6 +122,20 @@ private
         @error_messages << "-a | --assembly requires a name (.NET only)"
       end 
       !@options[:assembly].nil? && @options[:assembly].to_s != ""
+    end
+
+    def get_valid_languages
+      base_dir = File.join(File.dirname(__FILE__), 'languages/')
+      Dir.foreach(base_dir) do |dir|
+        @valid_languages << dir if File.directory?("#{base_dir}#{dir}") && dir != ".." && dir != "."
+      end
+    end
+
+    def get_valid_sources
+      base_dir = File.join(File.dirname(__FILE__), 'sources/')
+      Dir.foreach(base_dir) do |dir|
+        @valid_input_types << dir if File.directory?("#{base_dir}#{dir}") && dir != ".." && dir != "."
+      end
     end
 
     def is_valid_option?(option)
@@ -175,20 +191,44 @@ private
         return false
       end
 
-      if @options[:input_type].to_s == "text"
-        if !args.include?("--source-file") && !args.include?("-sf")
-          @error_messages << "A path to a source file is required"
+      case @options[:input_type].to_s
+        when "text" then validate_text_input(args)
+        when "url" then validate_url_input(args)
+        when "db" then true
+        else false 
+      end
+    end
+
+    def validate_text_input(args)
+      if !args.include?("--source-file") && !args.include?("-sf")
+        @error_messages << "A path to a source file is required"
+        return false
+      else
+        source_file_index = -1
+        source_file_index = args.index("--source-file") if !args.index("--source-file").nil?
+        source_file_index = args.index("-sf") if source_file_index == -1
+        @options[:source_file] = set_full_path(args[source_file_index+1])
+        if @options[:source_file].nil? || !File.exists?(@options[:source_file])
+          @error_messages << "ERROR: '#{@options[:source_file]}' Is not a valid file."
+          @error_messages << "--source-file, -sf require a valid path to a file"
           return false
-        else
-          source_file_index = -1
-          source_file_index = args.index("--source-file") if !args.index("--source-file").nil?
-          source_file_index = args.index("-sf") if source_file_index == -1
-          @options[:source_file] = set_full_path(args[source_file_index+1])
-          if @options[:source_file].nil? || !File.exists?(@options[:source_file])
-            @error_messages << "ERROR: '#{@options[:source_file]}' Is not a valid file."
-            @error_messages << "--source-file, -sf require a valid path to a file"
-            return false
-          end
+        end
+      end
+      true
+    end
+
+    def validate_url_input(args)
+      if !args.include?("-url") 
+        @error_messages << "A valid URL to source is required"
+        return false
+      else
+        url_index = -1
+        url_index = args.index("-url") if !args.index("-url").nil?
+        @options[:url] = args[url_index+1]
+        if @options[:url].nil? 
+          @error_messages << "ERROR: '#{@options[:url]}' Is not a valid URI."
+          @error_messages << "-url requires a valid URI"
+          return false
         end
       end
       true

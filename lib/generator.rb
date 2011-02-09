@@ -1,1 +1,1 @@
-require 'cmd_line'
+require 'generator/cmd_line'

@@ -12,15 +12,16 @@ Feature: Generator Command Line Interface
 
     Scenarios: no options
       | cmd_1 | val_1 | cmd_2 | val_2 | msg_0             | msg_1                      | msg_2                         |
-      |       |       |       |       | Required Options: | --input-type, -i  db\|text | --language, -l  ruby\|c_sharp |
+      |       |       |       |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
 
     Scenarios: one required option
       | cmd_1        | val_1   | cmd_2        | val_2 | msg_0             | msg_1                      | msg_2                         |
-      | --input-type | db      | -tada        |       | Required Options: | --input-type, -i  db\|text | --language, -l  ruby\|c_sharp |
-      | --i 	     | db      | -lala        |       | Required Options: | --input-type, -i  db\|text | --language, -l  ruby\|c_sharp |
-      | --language   | c_sharp | -in          |       | Required Options: | --input-type, -i  db\|text | --language, -l  ruby\|c_sharp |
-      | --l 	     | db      | -tt          |       | Required Options: | --input-type, -i  db\|text | --language, -l  ruby\|c_sharp |
+      | --input-type | db      | -tada        |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
+      | --i 	     | db      | -lala        |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
+      | --language   | c_sharp | -in          |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
+      | --l 	     | db      | -tt          |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
 
+  @invalid
   Scenario Outline: start generation from command line with valid options that have invalid values
     Given I have not started the script
     When I start a generation job with "<cmd_1>" "<val_1>" and no "<cmd_2>" "<val_2>"
@@ -31,8 +32,8 @@ Feature: Generator Command Line Interface
       | cmd_1        | val_1   | cmd_2        | val_2   | msg_1                             | msg_2                              |
       | --input-type | db      | --language   | ada     | 'ada' is not a supported language | Supported Languages: ruby, c_sharp |
       | -i           | db      | -l           | C++     | 'C++' is not a supported language | Supported Languages: ruby, c_sharp |
-      | --input-type | from    | --language   | ruby    | 'from' is not a supported input type  | Supported Input Types: text, db |
-      | -i 	     | blah    | --language   | ruby    | 'blah' is not a supported input type  | Supported Input Types: text, db |
+      | --input-type | from    | --language   | ruby    | 'from' is not a supported input type  | Supported Input Types: db, url, text |
+      | -i 	     | blah    | --language   | ruby    | 'blah' is not a supported input type  | Supported Input Types: db, url, text |
 
   Scenario Outline: Start generation from command line with valid required options and optionals missing their values
     Given I have not started the script
@@ -72,14 +73,16 @@ Feature: Generator Command Line Interface
 
     Scenarios: quiet mode
       | cmd_1      | val_1   | cmd_2        | val_2     | cmd_3 | val_3                                 | cmd_4 |
-      | -l         | ruby    | -i           | text      | -sf   | ../spec/generator/data/allstar.txt | -q    |
-      | --language | c_sharp | --input-type | text      | -sf   | ../spec/generator/data/allstar.txt | --quiet | 
+      | -l         | ruby    | -i           | text      | -sf   | ../../spec/generator/data/allstar.txt | -q    |
+      | --language | c_sharp | --input-type | text      | -sf   | ../../spec/generator/data/allstar.txt | --quiet | 
 
   Scenario Outline:  When I pass the -h or --help command I should see the usage message displayed
     Given I have not started the script
     When I pass the command "<cmd>"
     Then I should see "Required Options:"
-    And I should see "--input-type, -i  db|text"
+    And I should see "--input-type, -i  db|url|text"
+    And I should see "	when using url -url followed by a valid URI to the input is required"
+    And I should see "	when using text --source-file or -sf followed by a path to the input file is required"
     And I should see "--language, -l    ruby|c_sharp"
     And I should see ""
     And I should see "Optional:"
@@ -91,6 +94,7 @@ Feature: Generator Command Line Interface
     And I should see "--model-output-dir, -mod  the name of the directory to place the model source/dll"
     And I should see "--quite, -q  runs the script without writing output"
 
+    @help
     Scenarios: help flags
       | cmd |
       | -h  |
