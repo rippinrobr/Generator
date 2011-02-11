@@ -4,6 +4,10 @@
 #---------------------------------------------------------------------
 <% first = true -%>
 class <%= @model_class_def.name.camelize %>
-  attr_accessor <% @model_class_def.properties.each do |e| %><% if !first %>,<% else  first = false end -%> :<%= e.name -%><% end %>
-
+  attr_accessor <% @model_class_def.properties.each do |e| -%><% if !first -%>,<% else  first = false end -%> :<%= e.name -%><% end -%>
+  <% @model_class_def.properties.each do |r| if r.data_type == "array" -%>
+  def initialize  
+       @<%= r.name %> = []
+  end <% end -%>
+  <% end -%>
 end

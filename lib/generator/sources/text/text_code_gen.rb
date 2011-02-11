@@ -22,7 +22,7 @@ module Generator
     def create_models
       if @options[:model_output].to_s == "emit"
 	if OS::has_dotnet?
-  	  require_relative "../../lib/generator/herlpers/emit_helpers.rb"
+  	  require_relative "../../lib/generator/helpers/emit_helpers.rb"
 	  params = Hash.new
           params[:options] = @options
           params[:service] = @elements_service

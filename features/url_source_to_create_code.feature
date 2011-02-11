@@ -14,6 +14,6 @@ Feature: Create Code from a URL Source
     And a service class file with the name "<service_file_name>"
 
     Scenarios:  valid options
-      | url | language | model_file_name | model_output_dir | service_file_name | service_output_dir |
-      | http://localhost:8098/riak/era_percentile/1979_AL | ruby | 1979_al.rb | /tmp | 1979_al_service.rb | /tmp |
-      | http://localhost:8098/riak/era_percentile/1979_AL | c_sharp | 1979Al.cs | /tmp | 1979AlService.cs | /tmp |
+      | url | language | model_file_name | model_output_dir | service_file_name | service_output_dir | model_output |
+      | http://localhost:8098/riak/era_percentile/1979_AL | ruby | seasonal_era_percentile.rb | /tmp | 1979_al_service.rb | /tmp | src |
+      | http://localhost:8098/riak/era_percentile/1979_AL | c_sharp | SeasonalEraPercentile.cs | /tmp | 1979AlService.cs | /tmp | src |

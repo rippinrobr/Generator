@@ -13,6 +13,10 @@ class String
     end
   end
 
+  def is_a_number?
+    !(self.to_i == 0 && self.to_f == 0 && self.to_s != '0')
+  end
+
   def singularize
     if self.ends_with?("us")
       self

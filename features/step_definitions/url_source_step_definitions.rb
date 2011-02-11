@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'step_helper.rb')
+require_relative 'step_helper'
 
 Given /^the source "([^"]*)"$/ do |url|
   @args = ["-i", "url", "-url", url] 
@@ -28,7 +28,7 @@ Then /^I should see a model class file with the name "([^"]*)"$/ do |mod_class_n
    File.exists?(File.join(@mod_output_dir, mod_class_name)).should == true
 end
 
-Then /^a service class file with the name "([^"]*)"$/ do |arg1, arg2|
+Then /^a service class file with the name "([^"]*)"$/ do |sod_class_name|
   pending # express the regexp above with the code you wish you had
 end
 

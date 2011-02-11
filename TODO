@@ -1,26 +1,13 @@
-Remove all aspects of the .NET code from this project.
-
-Refactor so that the input options are handled like the languages
-
-Add support for XML and JSON as input formats
+Add support for a URL input source
+  add JSON parser
+  add XML parser
+  rename ReadRawInput to Parser and the file to text_parser.rb 
 
 Add way to pass in delimiter for text file inputs
 
-Add support for creating code in Ruby
-  Testing template? - finish rspec book first
-  Refactor the DomainGenerator class to have a base and each language inherit 
-     from that
+Testing template? - finish rspec book first
 
 Update the CLI messaging to be more flexible and human readable.  
 
 Add the ability to read commands from a file.
   Update the help messages with all of the command line options
-
-Make input sources like the languages are now.
-  create a /inputs/db and /inputs/text structure and
-  keep the input specific code completely seperate.
-
-Add support for a URL source.  
-  Underling parsers need to handle XML, JSON and Text
-
-Add Support for command line options in a file

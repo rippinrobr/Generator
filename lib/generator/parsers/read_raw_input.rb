@@ -7,7 +7,7 @@ class ReadRawInput
   attr_accessor :input_type, :location
 
   def initialize(input_type, location, language, has_headings=false, delim=',')
-    require File.dirname(__FILE__) + "../../languages/#{language}/string"
+    load "lib/generator/languages/#{language}/string.rb"
 
     @input_type = input_type
     @location = location
@@ -96,8 +96,5 @@ class ReadRawInput
 	 @record_class.properties.push PropertyInfo.new PropertyUtils::generate_name i 
       end	
     end	
-  end
-
-  def fetch_url
   end
 end

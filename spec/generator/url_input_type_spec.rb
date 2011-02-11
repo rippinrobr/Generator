@@ -4,7 +4,7 @@ require_relative '../../lib/generator/utils/url_manager'
 
 module Generator
   describe Engine do
-    let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'ruby', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp' } }
+    let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'ruby', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src } }
     let(:output) { double('output').as_null_object }
     let(:url_mgr) { double('url_mgr').as_null_object }
     let(:code_gen) { Generator::Engine.new options, url_mgr, output }
@@ -34,7 +34,8 @@ module Generator
         url_mgr.stub(:body).and_return(@json)
         
         code_gen.create_models
-        File.exists?(File.join(options[:model_output_dir], options[:model_file_name])).should == true
+        puts File.join(options[:model_output_dir], options[:model_file_name])
+        File.exists?(File.join(options[:model_output_dir], "seasonal_era_percentile.rb")).should == true
       end
     end
   end
