@@ -8,7 +8,7 @@ module Generator
       @json = "\"{ \"Season\": \"1979\",  \"Position\": \"P\",  \"League\": \"AL\",  \"Rankings\": [{ \"Rank\": \"5\",  \"Value\": \"9\"},{ \"Rank\": \"15\",  \"Value\": \"6.38931297709924\"},{ \"Rank\": \"55\",  \"Value\": \"4.21723518850987\"},{ \"Rank\": \"85\",  \"Value\": \"3.12631578947368\"},{ \"Rank\": \"95\",  \"Value\": \"1.57342657342657\"}]}\""
     end
 
-    let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'ruby', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src } }
+    let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'ruby', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src, :input_type => 'url' } }
     let(:output) { double('output').as_null_object }
     let(:url_mgr) { double('url_mgr').as_null_object }
     let(:code_gen) { Generator::Engine.new options, url_mgr, output }
@@ -29,19 +29,26 @@ module Generator
     end
 
     describe "#create ruby class files" do
-
       it "should be able to create a ruby model from the JSON string above" do
         url_mgr.stub(:content_type).and_return("application/json")
         url_mgr.stub(:body).and_return(@json)
         
         code_gen.create_models
-        puts File.join(options[:model_output_dir], options[:model_file_name])
         File.exists?(File.join(options[:model_output_dir], "seasonal_era_percentile.rb")).should == true
+      end
+
+      it "should create a ruby service class from the JSON string above" do
+        url_mgr.stub(:content_type).and_return("application/json")
+        url_mgr.stub(:body).and_return(@json)
+       
+        code_gen.create_models
+        code_gen.create_service_classes 
+        File.exists?(File.join(options[:service_output_dir], "seasonal_era_percentile_service.rb")).should == true
       end
     end
     
     describe "#create C# class files" do
-      let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'c_sharp', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src, :model_namespace => 'StatsDriven.StatisPro' } }
+      let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'c_sharp', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src, :model_namespace => 'StatsDriven.StatisPro', :input_type => 'url' } }
       it "should create a C# model from the JSON string" do
         url_mgr.stub(:content_type).and_return("application/json")
         url_mgr.stub(:body).and_return(@json)

@@ -3,6 +3,8 @@ require_relative '../../parsers/record_class'
 require_relative '../../parsers/property_info'
 require_relative '../../utils/string'
 require_relative '../../languages/model_generator'
+require_relative '../../languages/domain_src_generator'
+require_relative '../../models/domain_src_settings'
 
 module Generator
   class Engine
@@ -22,11 +24,10 @@ module Generator
 
     def create_models
       arrays = 0
-      classes_to_create = get_model_classes_to_create(@res.body)
-      classes_to_create.each do |c|
+      @classes_to_create = get_model_classes_to_create(@res.body)
+      @classes_to_create.each do |c|
         if @options[:model_output] == :src
           junk, service_class_to_create = @model_gen.generate(c, @options)
-          puts "service_class_to_create => #{service_class_to_create}"
         elsif @options[:model_output] == :emit
           puts "Not support for JSON Input at this time"
         end
@@ -38,6 +39,13 @@ module Generator
     end
 
     def create_service_classes
+      @classes_to_create.each do |cls|
+        if cls.create_service_class
+          @options[:model_name] = cls.name
+          service_settings = DomainSrcSettings.new cls.name, @options, cls.properties
+          GenericDomainSrcGenerator.new(service_settings).generate_code
+        end
+      end 
     end
 
     def parser_name
@@ -83,9 +91,9 @@ module Generator
           prop.data_type = get_field_type(prop.unique_content[0])
         else
           prop.data_type = "array"
-          class_definitions << create_array_record_class(prop.unique_content[0])
- 	  prop.array_class_name = class_definitions.last.name
-          puts "prop.array_class_name => #{prop.array_class_name}"
+          array_class_definition = create_array_record_class(prop.unique_content[0])
+ 	  prop.array_class_name = array_class_definition.name
+          class_definitions << array_class_definition
         end
       end 
 
@@ -95,6 +103,7 @@ module Generator
     def create_array_record_class(values)
       arr_rec_class_def = RecordClass.new
       arr_rec_class_def.name = "rec_class".clean_name
+      arr_rec_class_def.create_service_class = false
 
       values[0].keys.each do |k|
         vals = []

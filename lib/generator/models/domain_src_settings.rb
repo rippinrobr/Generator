@@ -9,14 +9,18 @@ class DomainSrcSettings
     @table_keys      = Hash.new
 
     @columns.each do |t| 
-      @db_tables.push t.table_name unless @db_tables.include? t.table_name
-      if t.elements_to_views.respond_to? 'First'
-        if t.elements_to_views.First.is_key
-	  @table_keys[t.table_name] = [] unless @table_keys.keys.include? t.table_name
-	  @table_keys[t.table_name].push [t.field_type, t.field_name, t.col_name]
+
+      if t.respond_to? 'table_name'
+        @db_tables.push t.table_name unless @db_tables.include? t.table_name
+        if t.elements_to_views.respond_to? 'First'
+        # the db input would be here
+          if t.elements_to_views.First.is_key
+	    @table_keys[t.table_name] = [] unless @table_keys.keys.include? t.table_name
+	    @table_keys[t.table_name].push [t.field_type, t.field_name, t.col_name]
+          end
+        else
+          #text input
         end
-      else
-	#puts "The Text Source option does not support keys at this time"
       end
     end 
   end

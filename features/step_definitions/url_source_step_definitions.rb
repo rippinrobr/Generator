@@ -12,6 +12,7 @@ When /^I have a model output dir of "([^"]*)"$/ do |mod|
 end
 
 When /^I have a service output dir of "([^"]*)"$/ do |sod|
+  @sod_output_dir = "#{sod}"
   @args << "-sod"
   @args << sod
 end
@@ -29,6 +30,6 @@ Then /^I should see a model class file with the name "([^"]*)"$/ do |mod_class_n
 end
 
 Then /^a service class file with the name "([^"]*)"$/ do |sod_class_name|
-  pending # express the regexp above with the code you wish you had
+  File.exists?(File.join(@sod_output_dir, sod_class_name)).should == true
 end
 
