@@ -84,6 +84,8 @@ module Generator
         else
           prop.data_type = "array"
           class_definitions << create_array_record_class(prop.unique_content[0])
+ 	  prop.array_class_name = class_definitions.last.name
+          puts "prop.array_class_name => #{prop.array_class_name}"
         end
       end 
 
@@ -92,6 +94,7 @@ module Generator
 
     def create_array_record_class(values)
       arr_rec_class_def = RecordClass.new
+      arr_rec_class_def.name = "rec_class".clean_name
 
       values[0].keys.each do |k|
         vals = []

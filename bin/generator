@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-#$LOAD_PATH.unshift File.expand_path('../../win32', __FILE__)
-require 'os'
-require 'cmd_line'
+require_relative '../lib/generator/utils/os'
+require_relative '../lib/generator/cmd_line'
 
 puts "My Platform is #{OS::current_platform}"
 cmd_line = Generator::CmdLine.new STDOUT
