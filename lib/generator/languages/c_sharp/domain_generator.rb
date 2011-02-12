@@ -1,10 +1,10 @@
-require File.join(File.dirname(__FILE__),'../file_mgr')
-require File.join(File.dirname(__FILE__),'../../lib/array')
-require File.join(File.dirname(__FILE__),'../../lib/string.rb')
-require File.join(File.dirname(__FILE__),'helpers')
-require File.join(File.dirname(__FILE__),'string')
-require File.join(File.dirname(__FILE__),'db_helpers')
-require File.join(File.dirname(__FILE__),'language_settings')
+require_relative '../file_mgr'
+require_relative '../../utils/array'
+require_relative '../../utils/string.rb'
+require_relative 'helpers'
+require_relative 'string'
+require_relative 'db_helpers'
+require_relative 'language_settings'
 require 'etc'
 require 'erb'
 
@@ -33,7 +33,9 @@ class DomainGenerator
   private
   def set_data_types(cols_to_fix)
     cols_to_fix.each do |g|
+      if g.respond_to?('field_type')
    	g.field_type = get_type_as_string(g.field_type.to_s, g.elements_to_views.first.required)
+      end
     end
   end
 

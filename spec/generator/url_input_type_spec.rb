@@ -57,6 +57,15 @@ module Generator
         puts File.join(options[:model_output_dir], options[:model_file_name])
         File.exists?(File.join(options[:model_output_dir], "SeasonalEraPercentile.cs")).should == true
       end
+
+      it "should create a C# service class from the JSON string above" do
+        url_mgr.stub(:content_type).and_return("application/json")
+        url_mgr.stub(:body).and_return(@json)
+       
+        code_gen.create_models
+        code_gen.create_service_classes 
+        File.exists?(File.join(options[:service_output_dir], "SeasonalEraPercentileService.cs")).should == true
+      end
     end
   end
 end

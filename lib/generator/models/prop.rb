@@ -1,3 +1,7 @@
+# Check into removing the class totally.  I believe this is here to force the non-db sources to
+# act like the db source.  This isn't necessary.  I am moving towards having code_gen do its own
+# thing for each input.  Then work on the generation part being as similar as possible across all
+# sources
 class DummyClass2
   def required
     true
