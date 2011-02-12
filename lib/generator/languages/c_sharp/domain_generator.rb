@@ -23,6 +23,7 @@ class DomainGenerator
 
   def generate_code
     print "Creating a domain class for #{@settings.output_settings[:service_class_name]} with class name of #{@settings.output_settings[:service_class_name]}..." 
+    @settings.output_settings[:imports] = [] if @settings.output_settings[:imports].nil?
     template = File.join(File.dirname(__FILE__), "templates/#{@settings.output_settings[:input_type]}_domain.erb") 
     b = binding
     engine = ERB.new( File.read(template), 0, '-%>')

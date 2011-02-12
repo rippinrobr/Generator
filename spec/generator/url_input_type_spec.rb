@@ -1,5 +1,5 @@
 require 'spec_helper'
-require_relative '../../lib/generator/sources/url/url_code_gen'
+require_relative '../../lib/generator/sources/url/url_code_gen.rb'
 require_relative '../../lib/generator/utils/url_manager'
 
 module Generator
