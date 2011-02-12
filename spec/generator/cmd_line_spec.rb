@@ -6,12 +6,11 @@ def check_for_print_usage(output)
 
 #def check_for_print_usage(output)
   output.should_receive(:puts).with('Required Options:')
-  output.should_receive(:puts).with('--input-type, -i  db|url|text')
+  output.should_receive(:puts).with('--input-type, -i  url|text')
   output.should_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
   output.should_receive(:puts).with('--language, -l    ruby|c_sharp')
   output.should_receive(:puts).with('')
   output.should_receive(:puts).with('Optional:')
-  output.should_receive(:puts).with('--assembly, -a  name of the output assembly (.NET only)')
   output.should_receive(:puts).with('--service-output-dir, -sod  the name of the directory to place the service source')
   output.should_receive(:puts).with('--help, -h  displays this message')
   output.should_receive(:puts).with('--imports, -i   the name of the libraries to include in the generated source')
@@ -40,13 +39,13 @@ module Generator
        it "with 1 required field (--input-type ) and 1 non-required should display help" do
          args = [ "--input-type","tex", "--face", "lift" ]
   	 output.should_receive(:puts).with("'tex' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
+  	 output.should_receive(:puts).with("Supported Input Types: url, text") 
 	 cmd_line.run args
        end
 
        it "with 1 required field (-i) and 1 non-required should display help" do
          check_for_print_usage(output)
-         args = [ "--i","db", "--face", "lift" ]
+         args = [ "--i","text", "--face", "lift" ]
 	 cmd_line.run args
        end
 
@@ -58,7 +57,7 @@ module Generator
 
        it "with 1 required field (-l) and 1 non-required should display help" do
          check_for_print_usage(output)
-         args = [ "--l","db", "--face", "lift" ]
+         args = [ "--l","text", "--face", "lift" ]
 	 cmd_line.run args
        end
 
@@ -66,7 +65,7 @@ module Generator
   	 output.should_receive(:puts).with("'ada' is not a supported language")
   	 output.should_receive(:puts).with("Supported Languages: ruby, c_sharp") 
 
-         args = [ "--language","ada", "--input-type", "db" ]
+         args = [ "--language","ada", "--input-type", "text" ]
 	 cmd_line.run args
        end
 
@@ -74,13 +73,13 @@ module Generator
   	 output.should_receive(:puts).with("'C++' is not a supported language")
   	 output.should_receive(:puts).with("Supported Languages: ruby, c_sharp") 
 
-         args = [ "-l","C++", "--input-type", "db" ]
+         args = [ "-l","C++", "--input-type", "text" ]
 	 cmd_line.run args
        end
 
        it "with both required options but with a non-supported input type (--input-type zip)" do
   	 output.should_receive(:puts).with("'zip' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
+  	 output.should_receive(:puts).with("Supported Input Types: url, text") 
 
          args = [ "--language","ruby", "--input-type", "zip" ]
 	 cmd_line.run args
@@ -88,7 +87,7 @@ module Generator
 
        it "with both required options but with a non-supported input_source (-i zip)" do
   	 output.should_receive(:puts).with("'zip' is not a supported input type")
-  	 output.should_receive(:puts).with("Supported Input Types: db, url, text") 
+  	 output.should_receive(:puts).with("Supported Input Types: url, text") 
 
          args = [ "-i", "zip",  "--language","c_sharp"]
 	 cmd_line.run args
@@ -100,7 +99,7 @@ module Generator
         output.should_receive(:puts).with("'ears' is not a supported output option")
         output.should_receive(:puts).with("Supported Output Options: emit, src (default)")
 
-        args = [ "-i", "db",  "--language","c_sharp", "-m", "ears" ]
+        args = [ "-i", "text",  "--language","c_sharp", "-m", "ears", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
@@ -108,91 +107,77 @@ module Generator
         output.should_receive(:puts).with("'ears' is not a supported output option")
         output.should_receive(:puts).with("Supported Output Options: emit, src (default)")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--model", "ears" ]
-	cmd_line.run args
-      end
-
-      it "should return the assembly requires a name message (--assembly)" do
-        output.should_receive(:puts).with("-a | --assembly requires a name (.NET only)")
-
-        args = [ "-i", "db",  "--language","c_sharp", "--assembly", "" ]
-	cmd_line.run args
-      end
-
-      it "should return the assembly requires a name message (-a)" do
-        output.should_receive(:puts).with("-a | --assembly requires a name (.NET only)")
-
-        args = [ "-i", "db",  "--language","c_sharp", "-a", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--model", "ears", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the model namespace/module requirements message (-mn)" do
         output.should_receive(:puts).with("-mn | --model-namespace requires a name")
 
-        args = [ "-i", "db",  "--language","c_sharp", "-mn", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "-mn", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the service namespace/module requirements message (--model-namespace)" do
         output.should_receive(:puts).with("-mn | --model-namespace requires a name")
+        args = [ "-i", "text",  "--language","c_sharp", "--model-namespace", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 
-        args = [ "-i", "db",  "--language","c_sharp", "--model-namespace", "" ]
 	cmd_line.run args
       end
 
       it "should return the message that says the model output dir must be a valid directory (-mod)"  do
         output.should_receive(:puts).with("-mod | --model-output-dir requires a valid directory")
-
-        args = [ "-i", "db",  "--language","c_sharp", "-mod", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "-mod", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
+        
 	cmd_line.run args
       end
 
       it "should return the message that says the model output dir must be a valid directory (--model-output-dir)" do
         output.should_receive(:puts).with("-mod | --model-output-dir requires a valid directory")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--model-output-dir", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--model-output-dir", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the model output dir must be a valid directory (--model-output-dir /zzz)" do
         output.should_receive(:puts).with("-mod | --model-output-dir requires a valid directory")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--model-output-dir", "/zzz" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--model-output-dir", "/zzz", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the service output dir must be a valid directory (-sod)"  do
         output.should_receive(:puts).with("-sod | --service-output-dir requires a valid directory")
 
-        args = [ "-i", "db",  "--language","c_sharp", "-sod", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "-sod", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the service output dir must be a valid directory (--service-output-dir)" do
         output.should_receive(:puts).with("-sod | --service-output-dir requires a valid directory")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--service-output-dir", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--service-output-dir", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the service output dir must be a valid directory (--service-output-dir /zzz)" do
         output.should_receive(:puts).with("-sod | --service-output-dir requires a valid directory")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--service-output-dir", "/zzz" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--service-output-dir", "/zzz", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the imports requires at least one library (-imp)" do
         output.should_receive(:puts).with("-imp | --imports requires at least a name and can be a comma-delimeted list")
 
-        args = [ "-i", "db",  "--language","c_sharp", "-imp", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "-imp", "" , "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
 
       it "should return the message that says the imports requires at least one library (--imports)" do
         output.should_receive(:puts).with("-imp | --imports requires at least a name and can be a comma-delimeted list")
 
-        args = [ "-i", "db",  "--language","c_sharp", "--imports", "" ]
+        args = [ "-i", "text",  "--language","c_sharp", "--imports", "", "-sf", File.join(File.dirname(__FILE__),"data/allstar.txt")]
 	cmd_line.run args
       end
     end

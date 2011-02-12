@@ -42,7 +42,7 @@ module Generator
     private
     def print_usage()
       @output.puts 'Required Options:'
-      @output.puts '--input-type, -i  db|url|text'
+      @output.puts '--input-type, -i  url|text'
       @output.puts '	when using url -url followed by a valid URI to the input is required'
       @output.puts '	when using text --source-file or -sf followed by a path to the input file is required'
       @output.puts '--language, -l    ruby|c_sharp'
@@ -194,7 +194,6 @@ private
       case @options[:input_type].to_s
         when "text" then validate_text_input(args)
         when "url" then validate_url_input(args)
-        when "db" then true
         else false 
       end
     end

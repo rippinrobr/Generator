@@ -4,6 +4,7 @@ Feature: Generator Command Line Interface
   I want to generate code from a data source at the command line 
   that allows me to access the source data.
 
+  @invalid-options
   Scenario Outline: start generation from command line with invalid options
     Given I have not started the script
     When I start a generation job with "<cmd_1>" "<val_1>" and no "<cmd_2>" "<val_2>"
@@ -12,59 +13,59 @@ Feature: Generator Command Line Interface
 
     Scenarios: no options
       | cmd_1 | val_1 | cmd_2 | val_2 | msg_0             | msg_1                      | msg_2                         |
-      |       |       |       |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
+      |       |       |       |       | Required Options: | --input-type, -i  url\|text | --language, -l  ruby\|c_sharp |
 
     Scenarios: one required option
       | cmd_1        | val_1   | cmd_2        | val_2 | msg_0             | msg_1                      | msg_2                         |
-      | --input-type | db      | -tada        |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
-      | --i 	     | db      | -lala        |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
-      | --language   | c_sharp | -in          |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
-      | --l 	     | db      | -tt          |       | Required Options: | --input-type, -i  db\|url\|text | --language, -l  ruby\|c_sharp |
+      | --input-type | text    | -tada        |       | Required Options: | --input-type, -i  url\|text | --language, -l  ruby\|c_sharp |
+      | --i 	     | text    | -lala        |       | Required Options: | --input-type, -i  url\|text | --language, -l  ruby\|c_sharp |
+      | --language   | c_sharp | -in          |       | Required Options: | --input-type, -i  url\|text | --language, -l  ruby\|c_sharp |
+      | --l 	     | text    | -tt          |       | Required Options: | --input-type, -i  url\|text | --language, -l  ruby\|c_sharp |
 
-  @invalid
+  @valid-invalid-options
   Scenario Outline: start generation from command line with valid options that have invalid values
     Given I have not started the script
-    When I start a generation job with "<cmd_1>" "<val_1>" and no "<cmd_2>" "<val_2>"
+    When I start a generation job with "<cmd_1>" "<val_1>" and no "<cmd_2>" "<val_2>" "<cmd_3>" "<val_3>"
     And I should see "<msg_1>"
     And I should see "<msg_2>"
 
     Scenarios: required options present but one has an invalid value
-      | cmd_1        | val_1   | cmd_2        | val_2   | msg_1                             | msg_2                              |
-      | --input-type | db      | --language   | ada     | 'ada' is not a supported language | Supported Languages: ruby, c_sharp |
-      | -i           | db      | -l           | C++     | 'C++' is not a supported language | Supported Languages: ruby, c_sharp |
-      | --input-type | from    | --language   | ruby    | 'from' is not a supported input type  | Supported Input Types: db, url, text |
-      | -i 	     | blah    | --language   | ruby    | 'blah' is not a supported input type  | Supported Input Types: db, url, text |
+      | cmd_1        | val_1   | cmd_2        | val_2   | cmd_3 | val_3            | msg_1                             | msg_2                              |
+      | --input-type | text    | --language   | ada     | -sf   | ../../spec/generator/data/allstar.txt | 'ada' is not a supported language | Supported Languages: ruby, c_sharp |
+      | -i           | text    | -l           | C++     | -sf   | ../../spec/generator/data/allstar.txt | 'C++' is not a supported language | Supported Languages: ruby, c_sharp |
+      | --input-type | from    | --language   | ruby    | -sf   | ../../spec/generator/data/allstar.txt | 'from' is not a supported input type  | Supported Input Types: url, text |
+      #| -i 	     | blah    | --language   | ruby    | -sf   | ../../spec/generator/data/allstar.txt | 'blah' is not a supported input type  | Supported Input Types: url, text |
 
+  @valid-with-no-values
   Scenario Outline: Start generation from command line with valid required options and optionals missing their values
     Given I have not started the script
-    When I start a generation job with "<cmd_1>" "<val_1>" "<cmd_2>" "<val_2>" "<cmd_3>" "<val_3>"
+    When I start a generation job with "<cmd_1>" "<val_1>" "<cmd_2>" "<val_2>" "<cmd_3>" "<val_3>" "<cmd_4>" "<val_4>"
     Then I should see "<msg_0>"
     And I should see "<msg_1>"
 
     Scenarios: Missing Optional Values
-      | cmd_1 | val_1 | cmd_2 | val_2 | cmd_3   | val_3 | msg_0                                   | msg_1                                |
-      | -i    | db    | -l    | ruby  | -m      | ears  | 'ears' is not a supported output option | Supported Output Options: emit, src (default) |
-      | -i    | db    | -l    | ruby  | --model | ears  | 'ears' is not a supported output option | Supported Output Options: emit, src (default) |
+      | cmd_1 | val_1 | cmd_2 | val_2 | cmd_3   | val_3 | cmd_4 | val_4 | msg_0                                   | msg_1                                |
+      | -i    | text    | -l    | ruby  | -m      | ears  | -sf | ../../spec/generator/data/allstar.txt | 'ears' is not a supported output option | Supported Output Options: emit, src (default) |
+      | -i    | text    | -l    | ruby  | --model | ears  | -sf | ../../spec/generator/data/allstar.txt | 'ears' is not a supported output option | Supported Output Options: emit, src (default) |
 
+  @options-missing-values
   Scenario Outline: Start generation from command line with valid required options and optionals missing its value (no set of valid options)
     Given I have not started the script
-    When I start a generation job with "<cmd_1>" "<val_1>" "<cmd_2>" "<val_2>" "<cmd_3>" "<val_3>"
+    When I start a generation job with "<cmd_1>" "<val_1>" "<cmd_2>" "<val_2>" "<cmd_3>" "<val_3>" "<cmd_4>" "<val_4>"
     Then I should see "<msg_0>"
 
     Scenarios: Missing Value
-      | cmd_1 | val_1 | cmd_2 | val_2 | cmd_3   | val_3 | msg_0 |
-      | -i    | db    | -l    | ruby  | -a      |       | -a \| --assembly requires a name (.NET only) | 
-      | -i    | db    | -l    | ruby  | --assembly |    | -a \| --assembly requires a name (.NET only) |
-      | -i    | db    | -l    | ruby  | -mn      |       | -mn \| --model-namespace requires a name | 
-      | -i    | db    | -l    | ruby  | --model-namespace |    | -mn \| --model-namespace requires a name |
-      | -i    | db    | -l    | ruby  | -mod      |       | -mod \| --model-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | --model-output-dir | c:\zzzz | -mod \| --model-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | -sod      |       | -sod \| --service-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | --model-output-dir |       | -mod \| --model-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | -sod      |       | -sod \| --service-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | --service-output-dir |       | -sod \| --service-output-dir requires a valid directory | 
-      | -i    | db    | -l    | ruby  | -imp |       | -imp \| --imports requires at least a name and can be a comma-delimeted list | 
-      | -i    | db    | -l    | ruby  | --imports |       | -imp \| --imports requires at least a name and can be a comma-delimeted list | 
+      | cmd_1 | val_1 | cmd_2 | val_2 | cmd_3   | val_3 | cmd_4 | val_4 | msg_0 |
+      | -i    | text    | -l    | ruby  | -mn      |       |  -sf   | ../../spec/generator/data/allstar.txt | -mn \| --model-namespace requires a name | 
+      | -i    | text    | -l    | ruby  | --model-namespace |   | -sf | ../../spec/generator/data/allstar.txt |  -mn \| --model-namespace requires a name |
+      | -i    | text    | -l    | ruby  | -mod      |       |  -sf | ../../spec/generator/data/allstar.txt | -mod \| --model-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | --model-output-dir | c:\zzzz | -sf | ../../spec/generator/data/allstar.txt |  -mod \| --model-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | -sod      |       |  -sf | ../../spec/generator/data/allstar.txt | -sod \| --service-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | --model-output-dir |       |  -sf | ../../spec/generator/data/allstar.txt | -mod \| --model-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | -sod      |       | -sf | ../../spec/generator/data/allstar.txt |  -sod \| --service-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | --service-output-dir |       |  -sf | ../../spec/generator/data/allstar.txt | -sod \| --service-output-dir requires a valid directory | 
+      | -i    | text    | -l    | ruby  | -imp |       |  -sf | ../../spec/generator/data/allstar.txt | -imp \| --imports requires at least a name and can be a comma-delimeted list | 
+      | -i    | text    | -l    | ruby  | --imports |       |  -sf | ../../spec/generator/data/allstar.txt | -imp \| --imports requires at least a name and can be a comma-delimeted list | 
 
   Scenario Outline: When I pass the quiet command-line option I should see no output from the script
     Given I have not started the script
@@ -80,7 +81,7 @@ Feature: Generator Command Line Interface
     Given I have not started the script
     When I pass the command "<cmd>"
     Then I should see "Required Options:"
-    And I should see "--input-type, -i  db|url|text"
+    And I should see "--input-type, -i  url|text"
     And I should see "	when using url -url followed by a valid URI to the input is required"
     And I should see "	when using text --source-file or -sf followed by a path to the input file is required"
     And I should see "--language, -l    ruby|c_sharp"

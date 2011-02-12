@@ -18,8 +18,20 @@ When /^I start a generation job with "([^"]*)" "([^"]*)" and no "([^"]*)" "([^"]
   cmd.run args
 end
 
+When /^I start a generation job with "([^"]*)" "([^"]*)" and no "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)"$/ do |cmd1, val1, cmd2, val2, cmd3, val3|
+  args = [cmd1, val1, cmd2, val2, cmd3, File.join( File.dirname(__FILE__) , val3 )] 
+  cmd = Generator::CmdLine.new(output)
+  cmd.run args
+end
+
 When /^I start a generation job with "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)"$/ do |cmd1, val1, cmd2, val2, cmd3, val3|
-  args = [cmd1, val1, cmd2, val2, cmd3, val3] 
+  args = [cmd1, val1, cmd2, val2, cmd3, val3]
+  cmd = Generator::CmdLine.new(output)
+  cmd.run args
+end
+
+When /^I start a generation job with "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)"$/ do |cmd1, val1, cmd2, val2, cmd3, val3, cmd4, val4|
+  args = [cmd1, val1, cmd2, val2, cmd3, val3, cmd4, val4] 
   cmd = Generator::CmdLine.new(output)
   cmd.run args
 end

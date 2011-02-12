@@ -4,7 +4,7 @@ module Generator
   describe CmdLine do
     def check_output(output)
       output.should_receive(:puts).with('Required Options:')
-      output.should_receive(:puts).with('--input-type, -i  db|url|text')
+      output.should_receive(:puts).with('--input-type, -i  url|text')
       output.should_receive(:puts).with('	when using url -url followed by a valid URI to the input is required')
       output.should_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
       output.should_receive(:puts).with('--language, -l    ruby|c_sharp')
@@ -21,7 +21,7 @@ module Generator
  
     def should_not_have_output(output)
       output.should_not_receive(:puts).with('Required Options:')
-      output.should_not_receive(:puts).with('--input-type, -i  db|url|text')
+      output.should_not_receive(:puts).with('--input-type, -i  url|text')
       output.should_not_receive(:puts).with('	when using text --source-file or -sf followed by a path to the input file is required')
       output.should_not_receive(:puts).with('--language, -l    ruby|c_sharp')
       output.should_not_receive(:puts).with('')
