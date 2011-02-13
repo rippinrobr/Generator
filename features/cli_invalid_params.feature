@@ -87,7 +87,6 @@ Feature: Generator Command Line Interface
     And I should see "--language, -l    ruby|c_sharp"
     And I should see ""
     And I should see "Optional:"
-    And I should see "--assembly, -a  name of the output assembly (.NET only)"
     And I should see "--service-output-dir, -sod  the name of the directory to place the service source"
     And I should see "--help, -h  displays this message"
     And I should see "--imports, -i   the name of the libraries to include in the generated source" 

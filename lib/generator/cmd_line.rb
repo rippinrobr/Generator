@@ -24,7 +24,6 @@ module Generator
         print_usage
         return
       end
-      @has_required_options = false
       if(process_args(args))
         require File.join(File.dirname(__FILE__), "sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen")
 
@@ -46,7 +45,6 @@ module Generator
       @output.puts '--language, -l    ruby|c_sharp'
       @output.puts ''
       @output.puts 'Optional:'
-      @output.puts '--assembly, -a  name of the output assembly (.NET only)'
       @output.puts '--service-output-dir, -sod  the name of the directory to place the service source' 
       @output.puts '--header, hd the text input has column headers'
       @output.puts '--help, -h  displays this message'
@@ -61,10 +59,8 @@ module Generator
       args.each do |arg| 
         case(arg)
           when "--input-type"
-            "--input-type => #{!valid_input_type(args, arg)}"
             return false if !valid_input_type(args, arg)
           when "-i" 
-            "-i => #{!valid_input_type(args, arg)}"
             return false if !valid_input_type(args, arg)
           when "--language" 
             return false if !valid_language(args, arg)
@@ -115,18 +111,11 @@ module Generator
             @options[:quiet] = true
         end
       end
-      @has_required_options = !@options[:input_type].nil? && !@options[:language].nil?
+
+      !@options[:input_type].nil? && !@options[:language].nil?
     end
 
 private
-    def assembly_name(args, switch)
-      @options[:assembly] = args[args.index(switch)+1]
-      if @options[:assembly].nil? || @options[:assembly].to_s == ""
-        @error_messages << "-a | --assembly requires a name (.NET only)"
-      end 
-      !@options[:assembly].nil? && @options[:assembly].to_s != ""
-    end
-
     def get_valid_languages
       base_dir = File.join(File.dirname(__FILE__), 'languages/')
       Dir.foreach(base_dir) do |dir|
@@ -188,9 +177,11 @@ private
     def valid_input_type(args, switch)
       @options[:input_type] = args[args.index(switch)+1]
       if !@valid_input_types.include?(@options[:input_type].downcase)
+        @error_messages = [] if @error_messages.nil?
         @error_messages << "Required Options Missing" 
       	@error_messages << "'#{@options[:input_type]}' is not a supported input type"
         @error_messages << "Supported Input Types: #{@valid_input_types.join(", ")}"
+
         return false
       end
 

@@ -25,7 +25,7 @@ Feature:  Generate source/assembly from supported data sources
     | ruby     | ../../spec/generator/data/Allstar_with_headers.txt | true      | src        | ../spec/generator/out | ../spec/generator/out | allstar_txt.rb | allstar_txt_service.rb | 
     | ruby     | ../../spec/generator/data/Allstar_with_headers.txt | false     | src        | ../spec/generator/out | | allstar_txt.rb | | 
     | ruby     | ../../spec/generator/data/Allstar_with_headers.txt | true      | src        | ../spec/generator/out | | allstar_txt.rb | | 
-    | c_sharp  | ../../spec/generator/data/allstar.txt | false      | src       | ../spec/generator/out | ../spec/generator/out | AllstarTxt.cs | AllstartxtService.cs | 
-    | c_sharp  | ../../spec/generator/data/Allstar_with_headers.txt | true      | src       | ../spec/generator/out | ../spec/generator/out | AllstarTxt.cs | AllstartxtService.cs | 
+    | c_sharp  | ../../spec/generator/data/allstar.txt | false      | src       | ../spec/generator/out | ../spec/generator/out | AllstarTxt.cs | AllstarTxtService.cs | 
+    | c_sharp  | ../../spec/generator/data/Allstar_with_headers.txt | true      | src       | ../spec/generator/out | ../spec/generator/out | AllstarTxt.cs | AllstarTxtService.cs | 
     | c_sharp  | ../../spec/generator/data/Allstar_with_headers.txt | false     | src        | ../spec/generator/out | | AllstarTxt.cs | | 
     | c_sharp  | ../../spec/generator/data/Allstar_with_headers.txt | true      | src        | ../spec/generator/out | | AllstarTxt.cs | | 
