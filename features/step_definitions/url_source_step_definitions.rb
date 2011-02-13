@@ -11,6 +11,11 @@ When /^I have a model output dir of "([^"]*)"$/ do |mod|
   @args << mod
 end
 
+Given /^I have a model model class name of "([^"]*)"$/ do |model_class_name|
+  @args << "--model-class"
+  @args << model_class_name 
+end
+
 When /^I have a service output dir of "([^"]*)"$/ do |sod|
   @sod_output_dir = "#{sod}"
   @args << "-sod"
@@ -21,7 +26,7 @@ When /^I run the generator to create a model and service class in the language "
   @args << "-l"
   @args << language
 
-  cmd = Generator::CmdLine.new(output)
+  cmd = Generator::CmdLine.new(STDOUT)
   cmd.run @args 
 end
 

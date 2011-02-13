@@ -18,9 +18,10 @@ class ModelGenerator
      template = File.join(File.dirname(__FILE__), "./#{language}/templates/model.erb")
      b = binding
      engine = ERB.new( File.read(template), 0, "-%>")
+     print "Creating model class #{@settings[:model_name]}...."
      write_class_file(settings[:model_output_dir], @model_class_def.name, 
 		      engine.result(b), LanguageSettings::FILE_EXTENSION)
-
+     puts "Done!"
      [@model_class_def, @model_class_def.name.gsub(/(M|m)odel/,'').clean_name]
   end
 end

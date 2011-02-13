@@ -1,8 +1,8 @@
 #---------------------------------------------------------------------
-# Generated on 2011-02-12 16:48:23 -0500 by rob
+# Generated on 2011-02-12 19:10:15 -0500 by rob
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
-require './allstar_txt'
+require_relative 'allstar_txt'
 
 class AllstarTxtService
   def initialize(gen_source = '')

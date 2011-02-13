@@ -1,6 +1,7 @@
 class String
   def clean_name
-    self.gsub('"','').gsub(/ +|\.|'|\\|\//,'_').camelize
+    self.gsub('"','').gsub(/ +|\.|'|\\|\//,'_').camelize if / +|\.|'|"|\\|\//.match(self)
+    self
   end
 end
 

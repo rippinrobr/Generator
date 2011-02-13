@@ -1,6 +1,8 @@
-Remove .NET related code and leave that in the IronRubyAssemblyGenerator
+Remove the text_elements_service.rb file and update the text_code_gen.rb file
 
 Add CoffeeScript Language support
+
+I need to fix the domain/service class template to retrieve the URL and not a text file.
 
 Add support for a URL input source
   add XML parser

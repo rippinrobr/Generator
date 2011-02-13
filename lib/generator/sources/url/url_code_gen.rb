@@ -26,11 +26,7 @@ module Generator
       arrays = 0
       @classes_to_create = get_model_classes_to_create(@res.body)
       @classes_to_create.each do |c|
-        if @options[:model_output] == :src
-          junk, service_class_to_create = @model_gen.generate(c, @options)
-        elsif @options[:model_output] == :emit
-          puts "Not support for JSON Input at this time"
-        end
+        junk, service_class_to_create = @model_gen.generate(c, @options)
       end
     end
    

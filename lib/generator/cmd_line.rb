@@ -24,7 +24,6 @@ module Generator
         print_usage
         return
       end
-
       @has_required_options = false
       if(process_args(args))
         require File.join(File.dirname(__FILE__), "sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen")
@@ -32,7 +31,6 @@ module Generator
         engine = Engine.new @options
         engine.create_models unless @options[:model_output_dir].nil?
         engine.create_service_classes unless @options[:service_output_dir].nil?
-
       else
         @error_messages.each { |e| @output.puts e }
         print_usage
@@ -55,25 +53,24 @@ module Generator
       @output.puts '--imports, -i   the name of the libraries to include in the generated source' 
       @output.puts '--model, -m  src | emit (.NET only) - indicates how you want the model code created'
       @output.puts '--model-output-dir, -mod  the name of the directory to place the model source/dll' 
+      @output.puts '--model-class, -mc  the name of the model class' 
       @output.puts '--quite, -q  runs the script without writing output' 
     end
 
     def process_args(args)
-      args.each do |arg|
+      args.each do |arg| 
         case(arg)
           when "--input-type"
+            "--input-type => #{!valid_input_type(args, arg)}"
             return false if !valid_input_type(args, arg)
           when "-i" 
+            "-i => #{!valid_input_type(args, arg)}"
             return false if !valid_input_type(args, arg)
           when "--language" 
             return false if !valid_language(args, arg)
           when "-l" 
             return false if !valid_language(args, arg)
           #--- Optional Params from here down
-          when "-a"
-            return false if !assembly_name(args, arg)
-          when "--assembly"
-            return false if !assembly_name(args, arg)
           when "-sod"
             return false if !valid_service_output_dir(args, arg)
           when "--service-output-dir"
@@ -100,6 +97,12 @@ module Generator
             return false if !valid_model_output_option(args, arg)
           when "-mn"
             return false if !valid_model_namespace(args, arg)
+          when "--model-namespace"
+            return false if !valid_model_namespace(args, arg)
+          when "-mc"
+            return false if !valid_model_class(args, arg)
+          when "--model-class"
+            return false if !valid_model_class(args, arg)
           when "--model-namespace"
             return false if !valid_model_namespace(args, arg)
           when "-mod"
@@ -191,11 +194,23 @@ private
         return false
       end
 
-      case @options[:input_type].to_s
+      result = case @options[:input_type].to_s
         when "text" then validate_text_input(args)
         when "url" then validate_url_input(args)
         else false 
       end
+
+      result
+    end
+
+    def valid_model_class(args, switch)
+      @options[:model_class_name] = args[args.index(switch)+1]
+      if @options[:model_class_name] == '' || @options[:model_class_name].nil? 
+         @error_messages << "-mc | --model-class requires a name to follow" 
+         @options[:model_class_name] = nil
+         return false
+      end
+      true
     end
 
     def validate_text_input(args)

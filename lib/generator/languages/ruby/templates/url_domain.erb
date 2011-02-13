@@ -21,7 +21,7 @@ class <%= @domain_class_name.camelize %>
 
 	  <% i = 0 -%>
   	  model = <%= @settings.class_name.clean_name.camelize -%>.new 
-	  <% @settings.columns.each do |col| -%>
+	  <% @settings.properties.each do |col| -%>
 	model.<%= col.name %> = parts[<%= i -%>]
 	  <% i += 1
 	  end %>
@@ -36,7 +36,7 @@ class <%= @domain_class_name.camelize %>
 
     @content
   end
-<% @settings.columns.each do |col| %>
+<% @settings.properties.each do |col| %>
   def find_by_<%= col.name -%>(val)
     @content.keep_if { |a| a.<%= col.name + data_type_conversion(col.data_type) -%> == val }
   end
