@@ -5,9 +5,16 @@
 <% first = true -%>
 class <%= @model_class_def.name.camelize %>
   attr_accessor <% @model_class_def.properties.each do |e| -%><% if !first -%>,<% else  first = false end -%> :<%= e.name -%><% end -%>
+
+  def initialize(raw_data)
   <% @model_class_def.properties.each do |r| if r.data_type == "array" -%>
-  def initialize  
-       @<%= r.name %> = []
-  end <% end -%>
+       require File.join(File.dirname(__FILE__), '<%= r.array_class_name %>')
+       @<%= r.name %> = [] 
+       raw_data["<%= r.name.capitalize %>"].each { |rec| @<%= r.name %> << <%= r.array_class_name.clean_name.camelize %>.new(rec) } <% else -%> @<%= r.name %> = raw_data["<%= r.name.capitalize %>"]  <% end -%>
   <% end -%>
+  end
+
+  def to_s
+    "{<% @model_class_def.properties.each { |p|%> <%= p.name %> => #{@<%= p.name %>} <%}%>}"
+  end
 end

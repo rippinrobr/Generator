@@ -23,7 +23,6 @@ module Generator
     end
 
     def create_models
-      arrays = 0
       @classes_to_create = get_model_classes_to_create(@res.body)
       @classes_to_create.each do |c|
         junk, service_class_to_create = @model_gen.generate(c, @options)
@@ -87,6 +86,7 @@ module Generator
           prop.data_type = get_field_type(prop.unique_content[0])
         else
           prop.data_type = "array"
+          class_def.has_an_array_property = true
           array_class_definition = create_array_record_class(prop.unique_content[0])
  	  prop.array_class_name = array_class_definition.name
           class_definitions << array_class_definition

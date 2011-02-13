@@ -2,30 +2,30 @@
 # Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
+require 'uri'
+require 'net/http'
+require 'json/ext'
 require File.join(File.dirname(__FILE__),'<%= @settings.class_name -%>')
 
 class <%= @domain_class_name.camelize %>
-  def initialize(gen_source = '')
-    @gen_source = gen_source
+  def initialize(uri = '')
+    @uri = uri
     @content = []
   end
 
   def all()
-    raise "Cannot open a nil source" unless !@gen_source.nil?    
+    raise "Cannot open a nil source" unless !@uri.nil?    
     
     begin
-      File.open(@gen_source) do |f|
-        while(line = f.readline)
-          line.chomp
-	  parts = line.gsub(/"/,'').split(',')
-
-	  <% i = 0 -%>
-  	  model = <%= @settings.class_name.clean_name.camelize -%>.new 
-	  <% @settings.properties.each do |col| -%>
-	model.<%= col.name %> = parts[<%= i -%>]
-	  <% i += 1
-	  end %>
- 	  @content << model
+      url = URI.parse @uri
+      req = Net::HTTP::Get.new(url.path)
+      Net::HTTP.start( url.host, url.port ) do |http| 
+        res = http.request(req) 
+        case res
+        when Net::HTTPSuccess
+	  parsed_data = JSON.parse(res.body.gsub(/\\|^\"|\"$/,''))
+          rec = <%= @settings.class_name.clean_name.camelize -%>.new parsed_data
+          @content << rec
         end
       end 
     rescue Errno::ENOENT => e 
@@ -34,7 +34,7 @@ class <%= @domain_class_name.camelize %>
     rescue EOFError 
     end
 
-    @content
+    @content 
   end
 <% @settings.properties.each do |col| %>
   def find_by_<%= col.name -%>(val)
