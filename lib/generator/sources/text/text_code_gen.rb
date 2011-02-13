@@ -1,4 +1,3 @@
-require_relative "../../models/model_class_definition"
 require_relative "../../models/domain_src_settings"
 require_relative "../../parsers/read_raw_input"
 require_relative "../../languages/model_generator"
