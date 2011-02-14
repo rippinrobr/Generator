@@ -23,21 +23,10 @@ module Generator
     end
 
     def create_models
-      arrays = 0
       @classes_to_create = get_model_classes_to_create(@res.body)
-      @classes_to_create.each do |c|
-        if @options[:model_output] == :src
-          junk, service_class_to_create = @model_gen.generate(c, @options)
-        elsif @options[:model_output] == :emit
-          puts "Not support for JSON Input at this time"
-        end
-      end
+      @classes_to_create.each { |c| @model_gen.generate(c, @options) }
     end
    
-    def get_model_classes_to_create(data)
-      parse_json(data)
-    end
-
     def create_service_classes
       @classes_to_create.each do |cls|
         if cls.create_service_class
@@ -54,6 +43,10 @@ module Generator
     end 
 
    private
+    def get_model_classes_to_create(data)
+      parse_json(data)
+    end
+
     def load_parser
       @res = @url_mgr.get_page @options[:url]
       content_type = @res.content_type.gsub(/\//,'_')
@@ -91,7 +84,7 @@ module Generator
           prop.data_type = get_field_type(prop.unique_content[0])
         else
           prop.data_type = "array"
-          array_class_definition = create_array_record_class(prop.unique_content[0])
+          array_class_definition = create_array_record_class(prop.unique_content[0], "#{prop.name}_model".clean_name)
  	  prop.array_class_name = array_class_definition.name
           class_definitions << array_class_definition
         end
@@ -100,9 +93,9 @@ module Generator
       class_definitions << class_def
     end
 
-    def create_array_record_class(values)
+    def create_array_record_class(values, field_name="rec_class")
       arr_rec_class_def = RecordClass.new
-      arr_rec_class_def.name = "rec_class".clean_name
+      arr_rec_class_def.name = field_name.clean_name
       arr_rec_class_def.create_service_class = false
 
       values[0].keys.each do |k|
