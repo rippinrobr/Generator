@@ -24,7 +24,17 @@ module Generator
 
     def create_models
       @classes_to_create = get_model_classes_to_create(@res.body)
-      @classes_to_create.each { |c| @model_gen.generate(c, @options) }
+      more_classes_to_create = []
+      @classes_to_create.each do |cls|
+        cls.properties.each do |prop|
+          if prop.data_type == "class" && !@classes_to_create.include?(prop.name) 
+            new_prop_class = RecordClass.new
+            new_prop_class.name = "#{prop.name}_model".camelize  
+            more_classes_to_create << convert_hash_to_class(prop.unique_content[0], new_prop_class) 
+          end
+        end
+      end
+      (@classes_to_create | more_classes_to_create).each { |c| @model_gen.generate(c, @options) }
     end
    
     def create_service_classes
@@ -66,9 +76,9 @@ module Generator
     end
   
     def convert_hash_to_class(data, class_def)
-      class_def.name = set_class_name
+      class_def.name = set_class_name if class_def.name == '' || class_def.name.nil?
       data.keys.each do |field| 
-        prop = PropertyInfo.new field.clean_name
+        prop = PropertyInfo.new field.dup().clean_name
         prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
         class_def.properties << prop
       end
@@ -78,7 +88,7 @@ module Generator
 
     def check_data_types(class_def)
       class_definitions = []
-
+      
       class_def.properties.each do |prop|
         if prop.unique_content.count == 1 && !prop.unique_content[0].is_a?(Array)
           prop.data_type = get_field_type(prop.unique_content[0])
@@ -124,7 +134,7 @@ module Generator
       elsif data.is_a? Array
         "array"
       else  
-        puts "not a string or an array"
+        "class"
       end
     end
 

@@ -41,7 +41,7 @@ namespace <%= @settings.output_settings[:service_namespace] %>
                             let data = line.Split(',')
 			    select new <%= @model_class_name %>
                                        {
-				        <% @settings.columns.each do |col| %><%= col.name.clean_name %> = <%= @settings.write_convert_method(col.data_type, i) %>, 
+				        <% @settings.properties.each do |col| %><%= col.name.clean_name %> = <%= @settings.write_convert_method(col.data_type, i) %>, 
 					<% i += 1; end %>
                                        };
 

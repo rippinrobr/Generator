@@ -4,7 +4,7 @@ class String
     if cap_index.to_i > 0
       self.insert(cap_index.to_i+1, "_")
     end
-    self.gsub('"','').gsub(/ +|\.|'|\\|\//,'_').downcase 
+    self.gsub('"','').gsub(/ +|\.|'|\\|\/|-/,'_').downcase 
   end
 end
 

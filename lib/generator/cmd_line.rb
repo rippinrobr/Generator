@@ -11,7 +11,7 @@ module Generator
 
       @valid_languages            = []
       @valid_input_types          = []
-      @valid_model_output_options = ["emit", "src"]
+      @valid_model_output_options = ["src"]
 
       @error_messages    = [] 
 
@@ -24,15 +24,12 @@ module Generator
         print_usage
         return
       end
-
-      @has_required_options = false
       if(process_args(args))
         require File.join(File.dirname(__FILE__), "sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen")
 
         engine = Engine.new @options
         engine.create_models unless @options[:model_output_dir].nil?
         engine.create_service_classes unless @options[:service_output_dir].nil?
-
       else
         @error_messages.each { |e| @output.puts e }
         print_usage
@@ -42,24 +39,24 @@ module Generator
     private
     def print_usage()
       @output.puts 'Required Options:'
-      @output.puts '--input-type, -i  db|url|text'
+      @output.puts '--input-type, -i  url|text'
       @output.puts '	when using url -url followed by a valid URI to the input is required'
       @output.puts '	when using text --source-file or -sf followed by a path to the input file is required'
       @output.puts '--language, -l    ruby|c_sharp'
       @output.puts ''
       @output.puts 'Optional:'
-      @output.puts '--assembly, -a  name of the output assembly (.NET only)'
       @output.puts '--service-output-dir, -sod  the name of the directory to place the service source' 
       @output.puts '--header, hd the text input has column headers'
       @output.puts '--help, -h  displays this message'
-      @output.puts '--imports, -i   the name of the libraries to include in the generated source' 
-      @output.puts '--model, -m  src | emit (.NET only) - indicates how you want the model code created'
+      @output.puts '--imports, -imp   the name of the libraries to include in the generated source' 
+      @output.puts '--model, -m  src - indicates how you want the model code created'
       @output.puts '--model-output-dir, -mod  the name of the directory to place the model source/dll' 
+      @output.puts '--model-class, -mc  the name of the model class' 
       @output.puts '--quite, -q  runs the script without writing output' 
     end
 
     def process_args(args)
-      args.each do |arg|
+      args.each do |arg| 
         case(arg)
           when "--input-type"
             return false if !valid_input_type(args, arg)
@@ -70,10 +67,6 @@ module Generator
           when "-l" 
             return false if !valid_language(args, arg)
           #--- Optional Params from here down
-          when "-a"
-            return false if !assembly_name(args, arg)
-          when "--assembly"
-            return false if !assembly_name(args, arg)
           when "-sod"
             return false if !valid_service_output_dir(args, arg)
           when "--service-output-dir"
@@ -102,6 +95,12 @@ module Generator
             return false if !valid_model_namespace(args, arg)
           when "--model-namespace"
             return false if !valid_model_namespace(args, arg)
+          when "-mc"
+            return false if !valid_model_class(args, arg)
+          when "--model-class"
+            return false if !valid_model_class(args, arg)
+          when "--model-namespace"
+            return false if !valid_model_namespace(args, arg)
           when "-mod"
             return false if !valid_model_output_dir(args, arg)
           when "--model-output-dir"
@@ -112,18 +111,11 @@ module Generator
             @options[:quiet] = true
         end
       end
-      @has_required_options = !@options[:input_type].nil? && !@options[:language].nil?
+
+      !@options[:input_type].nil? && !@options[:language].nil?
     end
 
 private
-    def assembly_name(args, switch)
-      @options[:assembly] = args[args.index(switch)+1]
-      if @options[:assembly].nil? || @options[:assembly].to_s == ""
-        @error_messages << "-a | --assembly requires a name (.NET only)"
-      end 
-      !@options[:assembly].nil? && @options[:assembly].to_s != ""
-    end
-
     def get_valid_languages
       base_dir = File.join(File.dirname(__FILE__), 'languages/')
       Dir.foreach(base_dir) do |dir|
@@ -185,18 +177,31 @@ private
     def valid_input_type(args, switch)
       @options[:input_type] = args[args.index(switch)+1]
       if !@valid_input_types.include?(@options[:input_type].downcase)
+        @error_messages = [] if @error_messages.nil?
         @error_messages << "Required Options Missing" 
       	@error_messages << "'#{@options[:input_type]}' is not a supported input type"
         @error_messages << "Supported Input Types: #{@valid_input_types.join(", ")}"
+
         return false
       end
 
-      case @options[:input_type].to_s
+      result = case @options[:input_type].to_s
         when "text" then validate_text_input(args)
         when "url" then validate_url_input(args)
-        when "db" then true
         else false 
       end
+
+      result
+    end
+
+    def valid_model_class(args, switch)
+      @options[:model_class_name] = args[args.index(switch)+1]
+      if @options[:model_class_name] == '' || @options[:model_class_name].nil? 
+         @error_messages << "-mc | --model-class requires a name to follow" 
+         @options[:model_class_name] = nil
+         return false
+      end
+      true
     end
 
     def validate_text_input(args)
