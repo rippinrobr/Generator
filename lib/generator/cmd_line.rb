@@ -53,6 +53,7 @@ module Generator
       @output.puts '--model-output-dir, -mod  the name of the directory to place the model source/dll' 
       @output.puts '--model-class, -mc  the name of the model class' 
       @output.puts '--quite, -q  runs the script without writing output' 
+      @output.puts '--service-class, -sc  the name of the service class' 
     end
 
     def process_args(args)
@@ -109,6 +110,10 @@ module Generator
             @options[:quiet] = true
           when "--quiet" 
             @options[:quiet] = true
+          when "-sc"
+            return false if !valid_service_class(args, arg)
+          when "--service-class"
+            return false if !valid_service_class(args, arg)
         end
       end
 
@@ -198,6 +203,16 @@ private
       @options[:model_class_name] = args[args.index(switch)+1]
       if @options[:model_class_name] == '' || @options[:model_class_name].nil? 
          @error_messages << "-mc | --model-class requires a name to follow" 
+         @options[:model_class_name] = nil
+         return false
+      end
+      true
+    end
+
+    def valid_service_class(args, switch)
+      @options[:service_class_name] = args[args.index(switch)+1]
+      if @options[:service_class_name] == '' || @options[:service_class_name].nil? 
+         @error_messages << "-sc | --service-class requires a name to follow" 
          @options[:model_class_name] = nil
          return false
       end

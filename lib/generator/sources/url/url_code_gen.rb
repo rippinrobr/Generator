@@ -14,9 +14,6 @@ module Generator
       @options = options
       @output = output
       @url_mgr = url_mgr
-      
-      @domain_to_model = Hash.new
-      @domain_classes_to_create = []
       @model_gen = ModelGenerator.new
 
       load_parser
@@ -30,17 +27,22 @@ module Generator
           if prop.data_type == "class" && !@classes_to_create.include?(prop.name) 
             new_prop_class = RecordClass.new
             new_prop_class.name = "#{prop.name}_model".camelize  
+            new_prop_class.create_service_class = false
             more_classes_to_create << convert_hash_to_class(prop.unique_content[0], new_prop_class) 
           end
         end
       end
-      (@classes_to_create | more_classes_to_create).each { |c| @model_gen.generate(c, @options) }
+      @classes_to_create = @classes_to_create | more_classes_to_create
+      @classes_to_create.each { |c| @model_gen.generate(c, @options) }
     end
    
     def create_service_classes
       @classes_to_create.each do |cls|
         if cls.create_service_class
-          @options[:model_name] = cls.name
+          service_class_name = @options[:service_class_name]
+          service_class_name = cls.name if service_class_name.nil? || service_class_name == ''
+
+          @options[:model_class_name] = cls.name if @options[:model_class_name].nil? || @options[:model_class_name] == ''
           service_settings = DomainSrcSettings.new cls.name, @options, cls.properties
           GenericDomainSrcGenerator.new(service_settings).generate_code
         end
@@ -54,7 +56,10 @@ module Generator
 
    private
     def get_model_classes_to_create(data)
-      parse_json(data)
+      parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
+      class_def = convert_hash_to_class parsed_data, RecordClass.new
+      class_def.name = @options[:model_class_name] unless @options[:model_class_name].nil? || @options[:model_class_name] == ''
+      check_data_types class_def
     end
 
     def load_parser
@@ -70,9 +75,6 @@ module Generator
     end
 
     def parse_json(text)
-      data = @parser.parse text.gsub(/\\|^\"|\"$/,'')
-      class_def = convert_hash_to_class data, RecordClass.new
-      check_data_types class_def
     end
   
     def convert_hash_to_class(data, class_def)
