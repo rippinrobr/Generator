@@ -38,6 +38,7 @@ Then /^I should see a model class file with the name "([^"]*)"$/ do |mod_class_n
 end
 
 Then /^a service class file with the name "([^"]*)"$/ do |sod_class_name|
+  puts "output file => #{File.join(@sod_output_dir, sod_class_name)}"
   File.exists?(File.join(@sod_output_dir, sod_class_name)).should == true
 end
 

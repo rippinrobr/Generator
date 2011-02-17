@@ -56,14 +56,13 @@ module Generator
         code_gen.create_models
         File.exists?(File.join(options[:model_output_dir], "node_seasonal_era_percentile.rb")).should == true
       end
-
       it "should create service class for JSON objects that have multiple classes in them", :ruby_service => true do
         url_mgr.stub(:content_type).and_return("application/json")
         url_mgr.stub(:body).and_return(@complicated_json)
 
         code_gen.create_models
         code_gen.create_service_classes
-        File.exists?(File.join(options[:model_output_dir], "seasonal_era_percentile_service.rb")).should == true
+        File.exists?(File.join(options[:service_output_dir], "seasonal_era_percentile_service.rb")).should == true
       end
     end
     

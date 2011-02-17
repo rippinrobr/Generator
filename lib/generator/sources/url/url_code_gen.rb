@@ -26,7 +26,7 @@ module Generator
         cls.properties.each do |prop|
           if prop.data_type == "class" && !@classes_to_create.include?(prop.name) 
             new_prop_class = RecordClass.new
-            new_prop_class.name = "#{prop.name}_model".camelize  
+            new_prop_class.name = "#{prop.name}_model"
             new_prop_class.create_service_class = false
             more_classes_to_create << convert_hash_to_class(prop.unique_content[0], new_prop_class) 
           end
@@ -41,8 +41,8 @@ module Generator
         if cls.create_service_class
           service_class_name = @options[:service_class_name]
           service_class_name = cls.name if service_class_name.nil? || service_class_name == ''
-
           @options[:model_class_name] = cls.name if @options[:model_class_name].nil? || @options[:model_class_name] == ''
+
           service_settings = DomainSrcSettings.new cls.name, @options, cls.properties
           GenericDomainSrcGenerator.new(service_settings).generate_code
         end
