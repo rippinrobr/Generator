@@ -62,6 +62,32 @@ module Generator
         File.exists?(File.join(File.dirname(__FILE__), "out/allstar_txt_service.rb")).should == true
       end
     end
+
+    describe "Generate C# Code" do
+      it "should display error message when text is selected as input type but no source file is provided" do
+        output.should_receive(:puts).with('A path to a source file is required')
+        check_output(output)
+
+        args = ["-m", "src", "-l", "c_sharp", "-i", "text", "--model-output-dir", "./out/allstar_txt.rb", "--service-output-dir", "./out/allstar_txt_service.rb" ]
+	cmd_line.run args
+      end
+
+      it "should create a model class when all the necessary command line options are provided" do
+        should_not_have_output(output)
+    
+        args = ["-m", "src", "-l", "c_sharp", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__),"../generator/out"), "--service-output-dir", File.join(File.dirname(__FILE__), "../generator/out"), "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
+	cmd_line.run args
+        File.exists?(File.join(File.dirname(__FILE__), "out/AllstarTxt.cs")).should == true
+      end
+
+      it "should create a service class when all the necessary command_line options are provided" do
+        should_not_have_output(output)
+    
+        args = ["-m", "src", "-l", "c_sharp", "-i", "text", "--model-output-dir", File.join(File.dirname(__FILE__), "out"), "--service-output-dir", File.join(File.dirname(__FILE__),"../generator/out"), "-sf", File.join(File.dirname(__FILE__), "data/allstar.txt") ]
+	cmd_line.run args
+        File.exists?(File.join(File.dirname(__FILE__), "out/AllstarTxtService.cs")).should == true
+      end
+    end
   end
 end
  
