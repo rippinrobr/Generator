@@ -4,6 +4,7 @@ require_relative '../../utils/string.rb'
 require_relative 'helpers'
 require_relative 'string'
 require_relative 'language_settings'
+
 require 'etc'
 require 'erb'
 
@@ -13,7 +14,7 @@ class DomainGenerator
 
   def initialize(settings, domain_class_name = '')
     @settings = settings
-    @settings.output_settings[:service_class_name] = "#{@settings.class_name}Service"
+    @settings.output_settings[:service_class_name] = "#{@settings.class_name}_Service"
   end
 
   def generate_code

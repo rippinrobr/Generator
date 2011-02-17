@@ -83,6 +83,7 @@ module Generator
        
         code_gen.create_models
         code_gen.create_service_classes 
+        puts File.join(options[:service_output_dir], "SeasonalEraPercentileService.cs")
         File.exists?(File.join(options[:service_output_dir], "SeasonalEraPercentileService.cs")).should == true
       end
     end

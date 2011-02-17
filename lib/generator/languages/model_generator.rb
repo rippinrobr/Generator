@@ -10,7 +10,7 @@ class ModelGenerator
 
   def generate(model_class_def, settings)
      language = settings[:language]
-     require File.join(File.dirname(__FILE__), "./#{language}/language_settings")
+     load File.join(File.dirname(__FILE__), "#{language}/language_settings.rb")
 
      @model_class_def = model_class_def
      settings[:model_name] = model_class_def.name

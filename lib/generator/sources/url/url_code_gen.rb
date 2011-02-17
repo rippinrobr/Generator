@@ -11,6 +11,7 @@ module Generator
     
     def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT)
       load "lib/generator/languages/#{options[:language]}/string.rb"
+
       @options = options
       @output = output
       @url_mgr = url_mgr
