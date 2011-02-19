@@ -16,6 +16,8 @@ module Generator
       @output = output
       @url_mgr = url_mgr
       @model_gen = ModelGenerator.new
+      @class_definitions = []
+      @classes_to_create = []
 
       load_parser
     end
@@ -75,35 +77,36 @@ module Generator
       end
     end
 
-    def parse_json(text)
-    end
-  
     def convert_hash_to_class(data, class_def)
       class_def.name = set_class_name if class_def.name == '' || class_def.name.nil?
       data.keys.each do |field| 
-        prop = PropertyInfo.new field.dup().clean_name
+        prop = PropertyInfo.new field.dup().clean_name, field.dup()
         prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
+        get_property_data_type prop 
         class_def.properties << prop
       end
       
-      class_def 
+      class_def
     end
 
     def check_data_types(class_def)
-      class_definitions = []
-      
+
       class_def.properties.each do |prop|
-        if prop.unique_content.count == 1 && !prop.unique_content[0].is_a?(Array)
-          prop.data_type = get_field_type(prop.unique_content[0])
-        else
-          prop.data_type = "array"
-          array_class_definition = create_array_record_class(prop.unique_content[0], "#{prop.name}_model".clean_name)
- 	  prop.array_class_name = array_class_definition.name
-          class_definitions << array_class_definition
-        end
+        get_property_data_type prop
       end 
 
-      class_definitions << class_def
+      @class_definitions << class_def
+    end
+ 
+    def get_property_data_type(prop)
+      if prop.unique_content.count == 1 && !prop.unique_content[0].is_a?(Array)
+        prop.data_type = get_field_type(prop.unique_content[0])
+      else
+        prop.data_type = "array"
+        array_class_definition = create_array_record_class(prop.unique_content[0], "#{prop.name}_model".clean_name)
+ 	prop.array_class_name = array_class_definition.name
+        @class_definitions << array_class_definition
+      end
     end
 
     def create_array_record_class(values, field_name="rec_class")
@@ -111,10 +114,12 @@ module Generator
       arr_rec_class_def.name = field_name.clean_name
       arr_rec_class_def.create_service_class = false
 
-      values[0].keys.each do |k|
-        vals = []
-        values.each { |rec| vals << rec[k] }
-        arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, determine_field_type(vals))
+      if values[0].respond_to?('keys')
+        values[0].keys.each do |k|
+          vals = []
+          values.each { |rec| vals << rec[k] }
+          arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, k, determine_field_type(vals))
+        end
       end
 
       arr_rec_class_def 
@@ -132,10 +137,18 @@ module Generator
     end
 
     def get_field_type(data)
-      if data.is_a? String
+      if data.is_a?(String) 
         handle_string_data data
       elsif data.is_a? Array
         "array"
+      elsif data.is_a? Integer
+        "int"
+      elsif data.is_a? Float
+        "float"
+      elsif data.is_a? TrueClass
+        "bool"
+      elsif data.is_a? FalseClass
+        "bool"
       else  
         "class"
       end

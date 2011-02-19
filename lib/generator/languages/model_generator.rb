@@ -21,6 +21,7 @@ class ModelGenerator
      template = input_specific_model_template_path if File.exists?(input_specific_model_template_path)
 
      b = binding
+     #@model_class_def.properties.each { |p| puts p }
      engine = ERB.new( File.read(template), 0, "-%>")
      write_class_file(settings[:model_output_dir], @model_class_def.name, 
 		      engine.result(b), LanguageSettings::FILE_EXTENSION)

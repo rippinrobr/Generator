@@ -22,7 +22,7 @@ class <%= @domain_class_name.camelize %>
         res = http.request(req) 
         case res
         when Net::HTTPSuccess
-	  parsed_data = JSON.parse(res.body.gsub(/\\|^\"|\"$/,''))
+	  parsed_data = JSON.parse(res.body) 
           rec = <%= @settings.class_name.clean_name.camelize -%>.new parsed_data
           @content << rec
         end
