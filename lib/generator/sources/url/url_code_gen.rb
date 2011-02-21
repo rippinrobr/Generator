@@ -181,7 +181,7 @@ module Generator
     end
 
     def handle_string_data(data) 
-      if data.nil? || !data.is_a_number?
+      if data.nil? || !data.is_a_number?  || /[A-z]+/.match(data)
         "string"
       elsif data.to_i == data.to_f 
         "int"
