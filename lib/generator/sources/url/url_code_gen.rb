@@ -36,6 +36,7 @@ module Generator
         end
       end
       @classes_to_create = @classes_to_create | more_classes_to_create
+      ensure_all_classes_are_queued
       @classes_to_create.each { |c| @model_gen.generate(c, @options) }
     end
    
@@ -58,6 +59,31 @@ module Generator
     end 
 
    private
+    def ensure_all_classes_are_queued
+      more_classes = []
+      @classes_to_create.each do |c|
+        c.properties.each do |p|
+          if p.data_type == "class" 
+            need_to_create_a_class = true
+            @classes_to_create.each do |c2|
+              if c2.name == "#{p.name}_model"
+                need_to_create_a_class = false
+                break
+              end
+            end
+	    if need_to_create_a_class
+              cls = RecordClass.new
+              cls.create_service_class = false
+              cls.name = "#{p.name}_model"
+              more_classes << convert_hash_to_class(p.unique_content[0], cls)
+            end
+          end
+        end
+      end
+
+      @classes_to_create = @classes_to_create | more_classes
+    end
+
     def get_model_classes_to_create(data)
       parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
       class_def = convert_hash_to_class parsed_data, RecordClass.new
@@ -85,7 +111,7 @@ module Generator
         get_property_data_type prop 
         class_def.properties << prop
       end
-      
+     
       class_def
     end
 

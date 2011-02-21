@@ -31,7 +31,7 @@ namespace <%= @settings.output_settings[:service_namespace] %>
    {
    	public string ErrorMessage {get;set;}
 
-	public IEnumerable<<%= @model_class_name %>> Get(string inputFilePath) 
+	public IEnumerable<<%= @model_class_name %>> Get(string inputUri) 
 	{
 	    if (String.IsNullOrEmpty(inputFilePath)) throw new ArgumentNullException("inputFilePath");
 	    try {
@@ -41,7 +41,7 @@ namespace <%= @settings.output_settings[:service_namespace] %>
                             let data = line.Split(',')
 			    select new <%= @model_class_name %>
                                        {
-				        <% @settings.properties.each do |col| %><%= col.name.clean_name %> = <%= @settings.write_convert_method(col.data_type, i) %>, 
+				        <% @settings.properties.each do |col| %><%= col.name.clean_name %> = new <%= col.name.camelize %>Model(), 
 					<% i += 1; end %>
                                        };
 
