@@ -14,7 +14,7 @@ class DomainGenerator
 
   def initialize(settings, domain_class_name = '')
     @settings = settings
-    @settings.output_settings[:service_class_name] = "#{@settings.class_name}_Service"
+    @settings.output_settings[:service_class_name] = "#{@settings.class_name}Service"
   end
 
   def generate_code

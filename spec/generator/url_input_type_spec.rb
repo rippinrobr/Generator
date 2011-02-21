@@ -66,7 +66,7 @@ module Generator
       end
     end
     
-    describe "#create C# class files" do
+    describe "#create C# class files", :c_sharp_tests => true do
       let(:options) { { :url => 'http://localhost:8098/riak/era_percentile/1979_AL', :language => 'c_sharp', :model_class_name => 'seasonal_era_percentile', :model_file_name => '1979_al.rb', :model_output_dir => '/tmp', :service_file_name => '1979_al_service.rb', :service_output_dir => '/tmp', :model_output => :src, :model_namespace => 'StatsDriven.StatisPro', :input_type => 'url', :service_class_name => 'seasonal_era_percentile_service' } }
       it "should create a C# model from the JSON string" do
         url_mgr.stub(:content_type).and_return("application/json")

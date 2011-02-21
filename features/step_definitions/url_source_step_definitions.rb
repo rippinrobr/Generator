@@ -6,7 +6,6 @@ end
 
 When /^I have a model output dir of "([^"]*)"$/ do |mod|
   @mod_output_dir = "#{mod}"
-
   @args << "-mod"
   @args << mod
 end
@@ -24,14 +23,13 @@ When /^I run the generator to create a model and service class in the language "
   @args << service_class_name
   @args << "-mc"
   @args << @model_class_name
+  
   cmd = Generator::CmdLine.new(output)
-
   cmd.run @args 
 end
 
 Then /^I have a model class file with the name "([^"]*)"$/ do |mod_class_name|
    @model_class_name = mod_class_name.slice(0...-3)
-   puts File.join(@mod_output_dir, mod_class_name)
    File.exists?(File.join(@mod_output_dir, mod_class_name)).should == true
 end
 
@@ -40,7 +38,6 @@ Then /^I should see a model class file with the name "([^"]*)"$/ do |mod_class_n
 end
 
 Then /^a service class file with the name "([^"]*)"$/ do |sod_class_name|
-  puts "output file => #{File.join(@sod_output_dir, sod_class_name)}"
   File.exists?(File.join(@sod_output_dir, sod_class_name)).should == true
 end
 
