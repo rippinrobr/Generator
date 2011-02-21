@@ -17,9 +17,8 @@ class DomainGenerator
   end
 
   def generate_code
-    print "Creating a domain class for #{@settings.class_name.clean_name} with class name of #{@domain_class_name.clean_name}..." 
+    print "Creating a service class for #{@settings.class_name.clean_name} with class name of #{@domain_class_name.clean_name}..." 
     template = File.join(File.dirname(__FILE__), "templates/#{@settings.output_settings[:input_type]}_domain.erb") 
-    puts "template => #{template}"
     b = binding
     engine = ERB.new( File.read(template), 0, '-%>')
     write_class_file(@settings.output_settings[:service_output_dir], 

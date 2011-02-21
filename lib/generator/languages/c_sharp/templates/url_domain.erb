@@ -7,6 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
+using Newtonsoft.Json;
+
 using <%= @settings.output_settings[:model_namespace] %>;
 <% @settings.output_settings[:imports].each do |ns| %>
 using <%= ns %>;
@@ -24,36 +28,33 @@ namespace <%= @settings.output_settings[:service_namespace] %>
    public interface I<%= @domain_class_name %>
    {
    	string ErrorMessage {get;set;}
-	IQueryable<<%= @model_class_name %>> Get(string inputFilePath);
+	IQueryable<<%= @model_class_name.clean_name %>> Get(string inputFilePath);
    } 
 
    public class <%= @domain_class_name %> 
    {
    	public string ErrorMessage {get;set;}
 
-	public IEnumerable<<%= @model_class_name %>> Get(string inputFilePath) 
+	public IEnumerable<<%= @settings.class_name.clean_name %>> Get(string inputUri) 
 	{
-	    if (String.IsNullOrEmpty(inputFilePath)) throw new ArgumentNullException("inputFilePath");
-	    try {
-                var lines = File.ReadAllLines(inputFilePath);
-		<% i = 0 %>
-                return from line in lines
-                            let data = line.Split(',')
-			    select new <%= @model_class_name %>
-                                       {
-				        <% @settings.columns.each do |col| %><%= col.name.clean_name %> = <%= @settings.write_convert_method(col.data_type, i) %>, 
-					<% i += 1; end %>
-                                       };
+          if (String.IsNullOrEmpty(inputUri)) throw new ArgumentNullException("inputUri");
+          var dataList = new List<<%= @settings.class_name.clean_name %>>();
 
-            }
-            catch (FileNotFoundException ffe)
-            {
-                Console.WriteLine("ERROR: {0}", ffe.Message);    
-	    }
+          var rawContent = LoadeSiteContent(inputUri);
+	  var parsedContent = JsonConvert.DeserializeObject<<%= @settings.class_name.clean_name %>>(rawContent);
+          if (parsedContent != null ) dataList.Add(parsedContent);
 
-	
-	    return null; 
+	  return dataList;
 	}
+
+        private static string LoadeSiteContent(string url)
+        {
+          var client = new WebClient();
+          var html = client.DownloadData(url);
+          var utf = new UTF8Encoding();
+    
+          return utf.GetString(html);
+        }
    }
 }
 

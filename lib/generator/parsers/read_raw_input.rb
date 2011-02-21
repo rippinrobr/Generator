@@ -89,7 +89,7 @@ class ReadRawInput
   def configure_properties fields
     if @has_headings
       fields.each do |field|
-	@record_class.properties.push PropertyInfo.new field.clean_name
+	@record_class.properties.push PropertyInfo.new field.clean_name field
       end
     else
       (1..fields.length).each do |i| 

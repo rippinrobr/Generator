@@ -1,1 +1,3 @@
 *.swp
+spec/generator/out/*.cs
+out
