@@ -11,37 +11,42 @@ module Generator
     
     def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT)
       load "lib/generator/languages/#{options[:language]}/string.rb"
+
       @options = options
       @output = output
       @url_mgr = url_mgr
-      
-      @domain_to_model = Hash.new
-      @domain_classes_to_create = []
       @model_gen = ModelGenerator.new
+      @class_definitions = []
+      @classes_to_create = []
 
       load_parser
     end
 
     def create_models
-      arrays = 0
       @classes_to_create = get_model_classes_to_create(@res.body)
-      @classes_to_create.each do |c|
-        if @options[:model_output] == :src
-          junk, service_class_to_create = @model_gen.generate(c, @options)
-        elsif @options[:model_output] == :emit
-          puts "Not support for JSON Input at this time"
+      more_classes_to_create = []
+      @classes_to_create.each do |cls|
+        cls.properties.each do |prop|
+          if prop.data_type == "class" && !@classes_to_create.include?(prop.name) 
+            new_prop_class = RecordClass.new
+            new_prop_class.name = "#{prop.name}_model"
+            new_prop_class.create_service_class = false
+            more_classes_to_create << convert_hash_to_class(prop.unique_content[0], new_prop_class) 
+          end
         end
       end
+      @classes_to_create = @classes_to_create | more_classes_to_create
+      ensure_all_classes_are_queued
+      @classes_to_create.each { |c| @model_gen.generate(c, @options) }
     end
    
-    def get_model_classes_to_create(data)
-      parse_json(data)
-    end
-
     def create_service_classes
       @classes_to_create.each do |cls|
         if cls.create_service_class
-          @options[:model_name] = cls.name
+          service_class_name = @options[:service_class_name]
+          service_class_name = cls.name if service_class_name.nil? || service_class_name == ''
+          @options[:model_class_name] = cls.name if @options[:model_class_name].nil? || @options[:model_class_name] == ''
+
           service_settings = DomainSrcSettings.new cls.name, @options, cls.properties
           GenericDomainSrcGenerator.new(service_settings).generate_code
         end
@@ -54,6 +59,38 @@ module Generator
     end 
 
    private
+    def ensure_all_classes_are_queued
+      more_classes = []
+      @classes_to_create.each do |c|
+        c.properties.each do |p|
+          if p.data_type == "class" 
+            need_to_create_a_class = true
+            @classes_to_create.each do |c2|
+              if c2.name == "#{p.name}_model"
+                need_to_create_a_class = false
+                break
+              end
+            end
+	    if need_to_create_a_class
+              cls = RecordClass.new
+              cls.create_service_class = false
+              cls.name = "#{p.name}_model"
+              more_classes << convert_hash_to_class(p.unique_content[0], cls)
+            end
+          end
+        end
+      end
+
+      @classes_to_create = @classes_to_create | more_classes
+    end
+
+    def get_model_classes_to_create(data)
+      parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
+      class_def = convert_hash_to_class parsed_data, RecordClass.new
+      class_def.name = @options[:model_class_name] unless @options[:model_class_name].nil? || @options[:model_class_name] == ''
+      check_data_types class_def
+    end
+
     def load_parser
       @res = @url_mgr.get_page @options[:url]
       content_type = @res.content_type.gsub(/\//,'_')
@@ -66,49 +103,49 @@ module Generator
       end
     end
 
-    def parse_json(text)
-      data = @parser.parse text.gsub(/\\|^\"|\"$/,'')
-      class_def = convert_hash_to_class data, RecordClass.new
-      check_data_types class_def
-    end
-  
     def convert_hash_to_class(data, class_def)
-      class_def.name = set_class_name
+      class_def.name = set_class_name if class_def.name == '' || class_def.name.nil?
       data.keys.each do |field| 
-        prop = PropertyInfo.new field.clean_name
+        prop = PropertyInfo.new field.dup().clean_name, field.dup()
         prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
+        get_property_data_type prop 
         class_def.properties << prop
       end
-      
-      class_def 
+     
+      class_def
     end
 
     def check_data_types(class_def)
-      class_definitions = []
 
       class_def.properties.each do |prop|
-        if prop.unique_content.count == 1 && !prop.unique_content[0].is_a?(Array)
-          prop.data_type = get_field_type(prop.unique_content[0])
-        else
-          prop.data_type = "array"
-          array_class_definition = create_array_record_class(prop.unique_content[0])
- 	  prop.array_class_name = array_class_definition.name
-          class_definitions << array_class_definition
-        end
+        get_property_data_type prop
       end 
 
-      class_definitions << class_def
+      @class_definitions << class_def
+    end
+ 
+    def get_property_data_type(prop)
+      if prop.unique_content.count == 1 && !prop.unique_content[0].is_a?(Array)
+        prop.data_type = get_field_type(prop.unique_content[0])
+      else
+        prop.data_type = "array"
+        array_class_definition = create_array_record_class(prop.unique_content[0], "#{prop.name}_model".clean_name)
+ 	prop.array_class_name = array_class_definition.name
+        @class_definitions << array_class_definition
+      end
     end
 
-    def create_array_record_class(values)
+    def create_array_record_class(values, field_name="rec_class")
       arr_rec_class_def = RecordClass.new
-      arr_rec_class_def.name = "rec_class".clean_name
+      arr_rec_class_def.name = field_name.clean_name
       arr_rec_class_def.create_service_class = false
 
-      values[0].keys.each do |k|
-        vals = []
-        values.each { |rec| vals << rec[k] }
-        arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, determine_field_type(vals))
+      if values[0].respond_to?('keys')
+        values[0].keys.each do |k|
+          vals = []
+          values.each { |rec| vals << rec[k] }
+          arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, k, determine_field_type(vals))
+        end
       end
 
       arr_rec_class_def 
@@ -126,17 +163,25 @@ module Generator
     end
 
     def get_field_type(data)
-      if data.is_a? String
+      if data.is_a?(String) 
         handle_string_data data
       elsif data.is_a? Array
         "array"
+      elsif data.is_a? Integer
+        "int"
+      elsif data.is_a? Float
+        "float"
+      elsif data.is_a? TrueClass
+        "bool"
+      elsif data.is_a? FalseClass
+        "bool"
       else  
-        puts "not a string or an array"
+        "class"
       end
     end
 
     def handle_string_data(data) 
-      if data.nil? || !data.is_a_number?
+      if data.nil? || !data.is_a_number?  || /[A-z]+/.match(data)
         "string"
       elsif data.to_i == data.to_f 
         "int"

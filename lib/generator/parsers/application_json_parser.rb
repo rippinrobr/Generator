@@ -8,7 +8,7 @@ module Generator
       end
 
       def parse(content)
-        JSON.parse content
+        JSON.parse content.gsub(/""/,'"')
       end
     end
   end
