@@ -105,13 +105,17 @@ module Generator
 
     def convert_hash_to_class(data, class_def)
       class_def.name = set_class_name if class_def.name == '' || class_def.name.nil?
-      data.keys.each do |field| 
-        prop = PropertyInfo.new field.dup().clean_name, field.dup()
-        prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
-        get_property_data_type prop 
-        class_def.properties << prop
+      if data.respond_to?('keys')
+        data.keys.each do |field| 
+          prop = PropertyInfo.new field.dup().clean_name, field.dup()
+          prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
+          get_property_data_type prop 
+          class_def.properties << prop
+        end
+      else
+        puts data
       end
-     
+ 
       class_def
     end
 
@@ -144,7 +148,8 @@ module Generator
         values[0].keys.each do |k|
           vals = []
           values.each { |rec| vals << rec[k] }
-          arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, k, determine_field_type(vals))
+          puts k
+          arr_rec_class_def.properties << PropertyInfo.new(k.dup.clean_name, k, determine_field_type(vals))
         end
       end
 
