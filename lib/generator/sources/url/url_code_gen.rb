@@ -16,32 +16,18 @@ module Generator
       @output = output
       @url_mgr = url_mgr
       @model_gen = ModelGenerator.new
-      @class_definitions = []
-      @classes_to_create = []
+      @classes_queue = []
 
       load_parser
     end
 
     def create_models
-      @classes_to_create = get_model_classes_to_create(@res.body)
-      more_classes_to_create = []
-      @classes_to_create.each do |cls|
-        cls.properties.each do |prop|
-          if prop.data_type == "class" && !@classes_to_create.include?(prop.name) 
-            new_prop_class = RecordClass.new
-            new_prop_class.name = "#{prop.name}_model"
-            new_prop_class.create_service_class = false
-            more_classes_to_create << convert_hash_to_class(prop.unique_content[0], new_prop_class) 
-          end
-        end
-      end
-      @classes_to_create = @classes_to_create | more_classes_to_create
-      ensure_all_classes_are_queued
-      @classes_to_create.each { |c| @model_gen.generate(c, @options) }
+      get_model_classes_to_create(@res.body, @options[:model_class_name])
+      @classes_queue.each { |q| @model_gen.generate(q, @options) }
     end
    
     def create_service_classes
-      @classes_to_create.each do |cls|
+      @classes_queue.each do |cls|
         if cls.create_service_class
           service_class_name = @options[:service_class_name]
           service_class_name = cls.name if service_class_name.nil? || service_class_name == ''
@@ -59,36 +45,28 @@ module Generator
     end 
 
    private
-    def ensure_all_classes_are_queued
-      more_classes = []
-      @classes_to_create.each do |c|
-        c.properties.each do |p|
-          if p.data_type == "class" 
-            need_to_create_a_class = true
-            @classes_to_create.each do |c2|
-              if c2.name == "#{p.name}_model"
-                need_to_create_a_class = false
-                break
-              end
-            end
-	    if need_to_create_a_class
-              cls = RecordClass.new
-              cls.create_service_class = false
-              cls.name = "#{p.name}_model"
-              more_classes << convert_hash_to_class(p.unique_content[0], cls)
-            end
+    def get_model_classes_to_create(data, class_name = nil)
+      parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
+
+      class_def = convert_hash_to_class parsed_data, RecordClass.new
+      class_def.name = class_name unless class_name.nil? || class_name == ''
+      class_def.create_service_class = @classes_queue.length == 0
+
+      check_data_types class_def
+      @classes_queue << class_def
+      
+      class_def.check_for_classes_to_create().each do |cls|
+        cls_name = "#{cls.name}_model"
+        if cls.unique_content[0].is_a?(Hash)
+          get_model_classes_to_create(cls.unique_content[0].to_json, cls_name)
+        else
+          if !cls.unique_content[0].nil? && !cls.unique_content[0][0].nil?
+            get_model_classes_to_create(cls.unique_content[0][0].to_json, cls.array_class_name)
+          else
+            get_model_classes_to_create("{}", cls.array_class_name)
           end
         end
       end
-
-      @classes_to_create = @classes_to_create | more_classes
-    end
-
-    def get_model_classes_to_create(data)
-      parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
-      class_def = convert_hash_to_class parsed_data, RecordClass.new
-      class_def.name = @options[:model_class_name] unless @options[:model_class_name].nil? || @options[:model_class_name] == ''
-      check_data_types class_def
     end
 
     def load_parser
@@ -116,12 +94,9 @@ module Generator
     end
 
     def check_data_types(class_def)
-
       class_def.properties.each do |prop|
         get_property_data_type prop
       end 
-
-      @class_definitions << class_def
     end
  
     def get_property_data_type(prop)
@@ -131,7 +106,7 @@ module Generator
         prop.data_type = "array"
         array_class_definition = create_array_record_class(prop.unique_content[0], "#{prop.name}_model".clean_name)
  	prop.array_class_name = array_class_definition.name
-        @class_definitions << array_class_definition
+        array_class_definition
       end
     end
 
@@ -144,7 +119,7 @@ module Generator
         values[0].keys.each do |k|
           vals = []
           values.each { |rec| vals << rec[k] }
-          arr_rec_class_def.properties << PropertyInfo.new(k.clean_name, k, determine_field_type(vals))
+          arr_rec_class_def.properties << PropertyInfo.new(k.dup().clean_name, k, determine_field_type(vals))
         end
       end
 
