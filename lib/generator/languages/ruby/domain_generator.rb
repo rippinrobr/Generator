@@ -1,8 +1,8 @@
-require_relative '../../utils/string'
-require_relative '../file_mgr'
-require_relative 'string'
-require_relative 'helpers'
-require_relative 'language_settings'
+require 'generator/utils/string'
+require 'generator/languages/file_mgr'
+require 'generator/languages/ruby/string'
+require 'generator/languages/ruby/helpers'
+require 'generator/languages/ruby/language_settings'
 require 'etc'
 require 'erb'
 

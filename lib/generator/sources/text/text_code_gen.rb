@@ -1,7 +1,7 @@
-require_relative "../../models/domain_src_settings"
-require_relative "../../parsers/read_raw_input"
-require_relative "../../languages/model_generator"
-require_relative "../../languages/domain_src_generator"
+require "generator/models/domain_src_settings"
+require "generator/parsers/read_raw_input"
+require "generator/languages/model_generator"
+require "generator/languages/domain_src_generator"
 
 module Generator
   class Engine
