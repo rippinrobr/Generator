@@ -1,6 +1,6 @@
-require_relative '../utils/string'
-require File.dirname(__FILE__) + '/record_class'
-require File.dirname(__FILE__) + '/property_info'
+require 'generator/utils/string'
+require 'generator/parsers/record_class'
+require 'generator/parsers/property_info'
 require 'pathname'
 
 class ReadRawInput

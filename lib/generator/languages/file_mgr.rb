@@ -1,5 +1,5 @@
-require_relative "../utils/string"
-require_relative "../utils/os"
+require "generator/utils/string"
+require "generator/utils/os"
 
 module FileMgr
   def set_output_file_path(output_dir, class_name, file_ext)
