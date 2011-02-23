@@ -16,16 +16,13 @@ Feature: Create Code from a URL Source
 
     Scenarios:  valid options
       | url | language | service_class_name | model_file_name | model_output_dir | service_file_name | service_output_dir | model_output |
-<<<<<<< HEAD
       #| http://localhost:8098/riak/era_percentile/1979_AL | ruby | SeasonalEraPercentileService | seasonal_era_percentile.rb | /tmp | seasonal_era_percentile_service.rb | /tmp/ruby/service | src |
       #| http://localhost:3000/percentiles/era_season/1979_AL | ruby | SeasonalEraPercentileService | seasonal_era_percentile.rb | /tmp | seasonal_era_percentile_service.rb | /tmp/ruby/service | src |
       | http://localhost:3000/teams/2009_SFN | ruby | RosterService | roster.rb | /tmp | roster_service.rb | /tmp/ruby/service | src |
-=======
       | http://localhost:8098/riak/era_percentile/1979_AL | ruby | SeasonalEraPercentileService | seasonal_era_percentile.rb | /tmp | seasonal_era_percentile_service.rb | /tmp/ruby/service | src |
       | http://localhost:3000/percentiles/era_season/1979_AL | ruby | SeasonalEraPercentileService | seasonal_era_percentile.rb | /tmp | seasonal_era_percentile_service.rb | /tmp/ruby/service | src |
       | http://localhost:3000/teams/1979_SFN | ruby | RosterService | roster.rb | /tmp/roster | roster_service.rb | /tmp/roster | src |
       | http://localhost:3000/seasons/2009 | ruby | SeasonService | season.rb | /tmp/season | season_service.rb | /tmp/season | src |
->>>>>>> release/v0.1.2
      | http://localhost:8098/riak/era_percentile/1979_AL | c_sharp | SeasononalEraPercentileService | SeasonalEraPercentile.cs | /tmp | SeasonalEraPercentileService.cs | /tmp | src |
      | http://localhost:3000/percentiles/era_season/1979_AL | c_sharp | SeasononalEraPercentileService | SeasonalEraPercentile.cs | /tmp | SeasonalEraPercentileService.cs | /tmp | src |
       | http://localhost:3000/teams/1979_SFN | c_sharp | RosterService | Roster.cs | /tmp/roster | RosterService.cs | /tmp/roster | src |

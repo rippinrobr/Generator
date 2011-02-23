@@ -91,7 +91,6 @@ module Generator
           class_def.properties << prop
         end
       else
-        puts data
       end
  
       class_def
@@ -123,12 +122,8 @@ module Generator
         values[0].keys.each do |k|
           vals = []
           values.each { |rec| vals << rec[k] }
-<<<<<<< HEAD
-          puts k
           arr_rec_class_def.properties << PropertyInfo.new(k.dup.clean_name, k, determine_field_type(vals))
-=======
           arr_rec_class_def.properties << PropertyInfo.new(k.dup().clean_name, k, determine_field_type(vals))
->>>>>>> release/v0.1.2
         end
       end
 
