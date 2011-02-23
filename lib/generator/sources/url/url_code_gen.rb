@@ -1,10 +1,10 @@
-require_relative '../../utils/url_manager'
-require_relative '../../parsers/record_class'
-require_relative '../../parsers/property_info'
-require_relative '../../utils/string'
-require_relative '../../languages/model_generator'
-require_relative '../../languages/domain_src_generator'
-require_relative '../../models/domain_src_settings'
+require 'generator/utils/url_manager'
+require 'generator/parsers/record_class'
+require 'generator/parsers/property_info'
+require 'generator/utils/string'
+require 'generator/languages/model_generator'
+require 'generator/languages/domain_src_generator'
+require 'generator/models/domain_src_settings'
 
 module Generator
   class Engine

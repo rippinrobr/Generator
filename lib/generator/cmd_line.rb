@@ -25,7 +25,7 @@ module Generator
         return
       end
       if(process_args(args))
-        require File.join(File.dirname(__FILE__), "sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen")
+        require "generator/sources/#{@options[:input_type]}/#{@options[:input_type]}_code_gen"
 
         engine = Engine.new @options
         engine.create_models unless @options[:model_output_dir].nil?

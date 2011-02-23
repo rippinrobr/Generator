@@ -1,4 +1,4 @@
-require_relative '../utils/string'
+require 'generator/utils/string'
 
 class GenericDomainSrcGenerator
   def initialize(domain_src_settings)

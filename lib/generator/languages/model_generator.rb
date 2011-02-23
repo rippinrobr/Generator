@@ -1,6 +1,6 @@
 require 'etc'
 require 'erb'
-require File.join(File.dirname(__FILE__), 'file_mgr')
+require 'generator/languages/file_mgr'
 
 class ModelGenerator
   include FileMgr
