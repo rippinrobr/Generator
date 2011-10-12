@@ -3,6 +3,7 @@ require "generator/utils/os"
 
 module FileMgr
   def set_output_file_path(output_dir, class_name, file_ext)
+    puts "output_dir #{output_dir}"
     file_path = output_dir
     file_path = "" unless !file_path.nil?
     file_name = "#{class_name.clean_name}.#{file_ext}"

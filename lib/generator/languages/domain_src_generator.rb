@@ -2,7 +2,6 @@ require 'generator/utils/string'
 
 class GenericDomainSrcGenerator
   def initialize(domain_src_settings)
-    # load  "lib/generator/languages/#{domain_src_settings.output_settings[:language]}/domain_generator.rb"
     require "generator/languages/#{domain_src_settings.output_settings[:language]}/domain_generator.rb"
 
     @domain_src_settings = domain_src_settings

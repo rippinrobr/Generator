@@ -2,7 +2,7 @@
 # Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
-require './<%= @settings.class_name -%>'
+require '<%= @settings.output_settings[:model_output_dir]%>/<%= @settings.class_name -%>'
 
 class <%= @domain_class_name.camelize %>
   def initialize(gen_source = '')
