@@ -5,6 +5,8 @@ require "generator/languages/domain_src_generator"
 
 module Generator
   class Engine
+    attr_accessor :class_def
+
     def initialize(options, output=STDOUT)
       @options = options
       @output = output

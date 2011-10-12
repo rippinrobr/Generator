@@ -7,7 +7,8 @@ class ReadRawInput
   attr_accessor :input_type, :location
 
   def initialize(input_type, location, language, has_headings=false, delim=',')
-    load "lib/generator/languages/#{language}/string.rb"
+   # load "lib/generator/languages/#{language}/string.rb"
+    require "generator/languages/#{language}/string"
 
     @input_type = input_type
     @location = location
@@ -29,6 +30,7 @@ class ReadRawInput
     @record_class = RecordClass.new
     
     @record_class.name = File.basename(@location).to_s.clean_name
+    @record_class.name = @record_class.name.sub(".","_")
     File.open(@location, "r") do |txt|
       first_time_through = true
 
@@ -89,7 +91,7 @@ class ReadRawInput
   def configure_properties fields
     if @has_headings
       fields.each do |field|
-	@record_class.properties.push PropertyInfo.new field.clean_name field
+       	@record_class.properties.push PropertyInfo.new(field.clean_name, field)
       end
     else
       (1..fields.length).each do |i| 
