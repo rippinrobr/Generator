@@ -1,0 +1,22 @@
+#---------------------------------------------------------------------
+# Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
+# Using Generator 0.1.1
+#---------------------------------------------------------------------
+require 'active_record'
+
+ActiveRecord::Base.establish_connection(
+  :adapter => '<%= @options[:db_adapter] -%>',
+  :database => '<%= @options[:db_path] -%>'
+)
+
+class CreateMigration < ActiveRecord::Migration
+  def change
+    create_table :<%= @options[:db_table_name] -%>_source do |t|  t.integer :id, :null => false
+      <% @columns.map do |col| -%>
+      t.<%= clean_db_data_types(col.db_data_type) %> :<%= col.db_name %>    
+      <% end %>
+    end
+  end
+end
+
+CreateMigration.new().change
