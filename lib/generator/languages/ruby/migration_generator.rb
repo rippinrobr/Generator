@@ -24,13 +24,24 @@ class MigrationGenerator
     end
   end
 
-  def generate_code
+  def generate_migration
     template = File.join(File.dirname(__FILE__),
                          "templates/migration.erb")
     b = binding
     engine = ERB.new(File.read(template), 0, '-%>')
     write_class_file(@options[:migration_output_dir], 
                      @options[:migration_file_name],
+                     engine.result(b),
+                     "rb")
+  end
+
+  def generate_ar_model
+    template = File.join(File.dirname(__FILE__),
+                         "templates/ar_model.erb")
+    b = binding
+    engine = ERB.new(File.read(template), 0, '-%>')
+    write_class_file(@options[:migration_model_dir], 
+                     "#{@options[:db_table_name]}_source",
                      engine.result(b),
                      "rb")
   end
