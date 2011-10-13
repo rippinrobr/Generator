@@ -1,0 +1,10 @@
+#---------------------------------------------------------------------
+# Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
+# Using Generator 0.1.1
+#---------------------------------------------------------------------
+require 'active_record'
+
+ActiveRecord::Base.establish_connection(
+  :adapter => '<%= @options[:db_adapter] -%>',
+  :database => '<%= @options[:db_path] -%>'
+)
