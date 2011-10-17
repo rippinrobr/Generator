@@ -8,6 +8,10 @@ load File.join(File.dirname(__FILE__), 'ar_connection.rb')
 
 class CreateMigration < ActiveRecord::Migration
   def change
+    if ActiveRecord::Base.connection.tables.include?("<%= @options[:db_table_name] -%>_sources")
+      drop_table :<%= @options[:db_table_name] -%>_sources
+    end
+
     create_table :<%= @options[:db_table_name] -%>_sources do |t|  t.integer :id, :null => false
       <% @columns.map do |col| -%>
       t.<%= clean_db_data_types(col.db_data_type) %> :<%= col.db_name %>    

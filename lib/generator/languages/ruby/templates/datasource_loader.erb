@@ -15,7 +15,7 @@ start_index = <%= @options[:start_index] %>
 @data.slice(start_index, @data.length - start_index).map do |d|
   ar = <%= @options[:model_class_name] %>Source.new
   <% @columns.map do |col| -%>
-  ar.<%= col.db_name %> = d.<%= col.db_name %>
+  ar.<%= col.db_name %> = d.<%= col.class_prop_name %>
   <% end %> 
   ar.save
 end
