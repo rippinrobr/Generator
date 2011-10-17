@@ -1,0 +1,21 @@
+#---------------------------------------------------------------------
+# Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
+# Using Generator 0.1.1
+#---------------------------------------------------------------------
+require 'active_record'
+require '<%= @options[:service_class_path] %>'
+require '<%= @options[:migration_model_dir] %>/<%= @options[:db_table_name] %>_source'
+
+load File.join(File.dirname(__FILE__), 'ar_connection.rb')
+
+svc = <%= @options[:service_class_name] -%>.new '<%= @options[:source_uri] -%>'
+@data = svc.all
+start_index = <%= @options[:start_index] %>
+
+@data.slice(start_index, @data.length - start_index).map do |d|
+  ar = <%= @options[:model_class_name] %>Source.new
+  <% @columns.map do |col| -%>
+  ar.<%= col.db_name %> = d.<%= col.db_name %>
+  <% end %> 
+  ar.save
+end

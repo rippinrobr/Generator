@@ -41,6 +41,12 @@ class MigrationGenerator
                       @options[:migration_output_dir],
                       "ar_connection")
   end
+  
+  def generate_load_script
+    process_template("templates/datasource_loader.erb",
+                     @options[:migration_output_dir],
+                     "datasource_loader")
+  end
 
 private
   def process_template(template_path, output_dir, file_name)
