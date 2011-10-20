@@ -8,22 +8,26 @@ require 'generator/models/domain_src_settings'
 
 module Generator
   class Engine
-    
+    attr_accessor :class_def    
+
     def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT)
-      load "lib/generator/languages/#{options[:language]}/string.rb"
+      load File.join(File.dirname(__FILE__), "../../languages/#{options[:language]}/string.rb")
 
       @options = options
       @output = output
       @url_mgr = url_mgr
       @model_gen = ModelGenerator.new
       @classes_queue = []
+      @my_class_counter = 0
 
       load_parser
     end
 
     def create_models
       get_model_classes_to_create(@res.body, @options[:model_class_name])
-      @classes_queue.each { |q| @model_gen.generate(q, @options) }
+      @classes_queue.each { |q|
+        puts "[url_code_gen.create_models] q.name: #{q.name}"
+        @model_gen.generate(q, @options) }
     end
    
     def create_service_classes
@@ -48,15 +52,22 @@ module Generator
     def get_model_classes_to_create(data, class_name = nil)
       parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
 
-      class_def = convert_hash_to_class parsed_data, RecordClass.new
-      class_def.name = class_name unless class_name.nil? || class_name == ''
-      class_def.create_service_class = @classes_queue.length == 0
+      record = RecordClass.new
+      if class_name.nil?
+        record.name = ''
+      else
+        record.name = class_name
+      end
 
+      class_def = convert_hash_to_class(parsed_data, record)
+      class_def.create_service_class = @classes_queue.length == 0
       check_data_types class_def
+   
       @classes_queue << class_def
       
       class_def.check_for_classes_to_create().each do |cls|
         cls_name = "#{cls.name}_model"
+      
         if cls.unique_content[0].is_a?(Hash)
           get_model_classes_to_create(cls.unique_content[0].to_json, cls_name)
         else
@@ -72,9 +83,13 @@ module Generator
     def load_parser
       @res = @url_mgr.get_page @options[:url]
       content_type = @res.content_type.gsub(/\//,'_')
+      
+      if !@options[:content_type].nil?
+        content_type = @options[:content_type].downcase
+      end
 
       begin 
-        load "lib/generator/parsers/#{content_type}_parser.rb"   
+        load File.join(File.dirname(__FILE__), "../../parsers/#{content_type}_parser.rb")   
         @parser = Generator::Parsers::InputParser.new 
       rescue LoadError => e
         @output.puts "Content Type '#{content_type}' does not have a corresponding parser" 
@@ -82,17 +97,23 @@ module Generator
     end
 
     def convert_hash_to_class(data, class_def)
-      class_def.name = set_class_name if class_def.name == '' || class_def.name.nil?
+      # class_def = class_def
+      class_def.name = set_class_name(class_def.name) 
+      
       if data.respond_to?('keys')
-        data.keys.each do |field| 
+         data.keys.each do |field| 
           prop = PropertyInfo.new field.dup().clean_name, field.dup()
+          puts "[url_code_gen.convert_hash_to_class] prop.name => #{prop.name}"
           prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
           get_property_data_type prop 
           class_def.properties << prop
         end
       else
+        puts "NO KEYS!"
       end
- 
+       
+      puts "[url_code_gen.convert_hash_to_class] properties for the class #{class_def.name}..."
+      puts class_def.properties
       class_def
     end
 
@@ -114,6 +135,8 @@ module Generator
     end
 
     def create_array_record_class(values, field_name="rec_class")
+      #field_name = "rec_class" if field_name.nil?
+
       arr_rec_class_def = RecordClass.new
       arr_rec_class_def.name = field_name.clean_name
       arr_rec_class_def.create_service_class = false
@@ -169,9 +192,12 @@ module Generator
       end
     end
 
-    def set_class_name
-      return "my_class" if @options[:model_class_name].nil?
-      @options[:model_class_name].clean_name
+    def set_class_name(class_name)
+      if class_name.nil? || class_name == ''
+        @my_class_counter += 1
+        return "my_class#{@my_class_counter}"
+      end
+      class_name.clean_name
     end
   end
 end

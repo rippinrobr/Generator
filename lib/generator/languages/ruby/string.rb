@@ -1,13 +1,17 @@
 class String
   def clean_name
+#    puts "[str.clean_name] str to clean: #{self}"
+
     cap_index = self.index(/[a-z][A-Z]/)
     if cap_index.to_i > 0
       self.insert(cap_index.to_i+1, "_")
     end
     self.gsub('"','')
-    self.gsub(/ +|\.|'|\\|\/|-/,'_')
+    self.gsub(/ +|\$|\.|'|\\|\/|-/,'_')
     self.sub(".","_")
-    self.downcase 
+    
+#    puts "[str.clean_name] cleansed str: #{self.downcase.gsub("$","")}" 
+    self.downcase.gsub("$","")
   end
 end
 

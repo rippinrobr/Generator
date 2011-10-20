@@ -2,23 +2,22 @@
 # Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
-<% @model_class_def.properties.each do |r| if r.data_type == "class" || r.data_type == "array" -%>require_relative '<%= r.name %>_model'<% end -%> 
-<% end -%>
-<% first = true -%>
+<% @model_class_def.properties.each do |r| if r.data_type == "class" || r.data_type == "array" -%>require_relative '<%= r.name -%>_model'<% end -%> 
+<% end -%><% first = true -%>
 class <%= @model_class_def.name.camelize %>
-  attr_accessor <% @model_class_def.properties.each do |e| -%><% if !first -%>,<% else  first = false end -%> :<%= e.name -%><% end -%>
+  attr_accessor <% @model_class_def.properties.each do |e| -%><% if !e.nil? && !e.name.nil? -%><% if !first -%>,<% else  first = false end -%> :<%= e.name.clean_name -%><% end -%><%end -%>
 
   def initialize(parsed_data)
     @parsed_data = parsed_data
-
     <% @model_class_def.properties.each do |r| %>
-   #<%= r.name %>  <%= r %> <%= r.array_class_name %>
+    <% if !r.name.nil? %>
     <% if r.data_type == "array" -%>
-    @<%= r.name %> = [] 
+    @<%= r.name.clean_name %> = [] 
     parsed_data["<%= r.original_name %>"].each do |rec|
       @<%= r.name %> << <%= r.name.capitalize %>Model.new(rec)
     end
-    <% elsif r.data_type == "class" %>@<%= r.name %> = <%= r.name.capitalize %>Model.new(parsed_data["<%= r.original_name %>"])<% else %> @<%= r.name %> = parsed_data["<%= r.original_name %>"]<% end -%> 
+    <% elsif r.data_type == "class" %>@<%= r.name.clean_name %> = <%= r.name.gsub("_","").capitalize %>Model.new(parsed_data["<%= r.original_name %>"])<% else %> @<%= r.name %> = parsed_data["<%= r.original_name %>"]<% end -%> 
    <% end -%>
+  <% end -%>
   end
 end
