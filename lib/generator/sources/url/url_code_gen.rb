@@ -25,9 +25,9 @@ module Generator
 
     def create_models
       get_model_classes_to_create(@res.body, @options[:model_class_name])
-      @classes_queue.each { |q|
-        puts "[url_code_gen.create_models] q.name: #{q.name}"
-        @model_gen.generate(q, @options) }
+      @class_def = @classes_queue[0]
+      @classes_queue.each { |q|  @model_gen.generate(q, @options) }
+      @classes_queue
     end
    
     def create_service_classes

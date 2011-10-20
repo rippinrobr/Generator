@@ -1,3 +1,7 @@
 *.swp
 spec/generator/out/*.cs
 out
+debug.txt
+Generator*.gem
+server/
+\#debug.txt\#
