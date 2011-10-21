@@ -8,7 +8,7 @@ require 'generator/models/domain_src_settings'
 
 module Generator
   class Engine
-    attr_accessor :class_def    
+    attr_accessor :class_def, :child_classes
 
     def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT)
       load File.join(File.dirname(__FILE__), "../../languages/#{options[:language]}/string.rb")
@@ -18,6 +18,7 @@ module Generator
       @url_mgr = url_mgr
       @model_gen = ModelGenerator.new
       @classes_queue = []
+      @child_classes = []
       @my_class_counter = 0
 
       load_parser
@@ -25,7 +26,10 @@ module Generator
 
     def create_models
       get_model_classes_to_create(@res.body, @options[:model_class_name])
+
       @class_def = @classes_queue[0]
+      @class_def.child_classes = @classes_queue.slice(1, @classes_queue.length - 1) unless @classes_queue.length < 2 
+
       @classes_queue.each { |q|  @model_gen.generate(q, @options) }
       @classes_queue
     end
@@ -49,7 +53,7 @@ module Generator
     end 
 
    private
-    def get_model_classes_to_create(data, class_name = nil)
+    def get_model_classes_to_create(data, class_name = nil, parent_class = nil)
       parsed_data = @parser.parse data.gsub(/\\|^\"|\"$/,'')
 
       record = RecordClass.new
@@ -58,8 +62,10 @@ module Generator
       else
         record.name = class_name
       end
+      record.parent_class = parent_class
 
       class_def = convert_hash_to_class(parsed_data, record)
+
       class_def.create_service_class = @classes_queue.length == 0
       check_data_types class_def
    
@@ -69,12 +75,12 @@ module Generator
         cls_name = "#{cls.name}_model"
       
         if cls.unique_content[0].is_a?(Hash)
-          get_model_classes_to_create(cls.unique_content[0].to_json, cls_name)
+          get_model_classes_to_create(cls.unique_content[0].to_json, cls_name, class_def)
         else
           if !cls.unique_content[0].nil? && !cls.unique_content[0][0].nil?
-            get_model_classes_to_create(cls.unique_content[0][0].to_json, cls.array_class_name)
+            get_model_classes_to_create(cls.unique_content[0][0].to_json, cls.array_class_name, class_def)
           else
-            get_model_classes_to_create("{}", cls.array_class_name)
+            get_model_classes_to_create("{}", cls.array_class_name, class_def)
           end
         end
       end
@@ -103,7 +109,6 @@ module Generator
       if data.respond_to?('keys')
          data.keys.each do |field| 
           prop = PropertyInfo.new field.dup().clean_name, field.dup()
-          puts "[url_code_gen.convert_hash_to_class] prop.name => #{prop.name}"
           prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
           get_property_data_type prop 
           class_def.properties << prop
@@ -112,8 +117,6 @@ module Generator
         puts "NO KEYS!"
       end
        
-      puts "[url_code_gen.convert_hash_to_class] properties for the class #{class_def.name}..."
-      puts class_def.properties
       class_def
     end
 

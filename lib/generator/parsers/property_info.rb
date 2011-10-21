@@ -1,5 +1,7 @@
 class PropertyInfo
-  attr_accessor :name, :data_type, :had_one_non_number, :had_one_float, :unique_content, :array_class_name, :original_name
+  attr_accessor :name, :data_type, :had_one_non_number, 
+    :had_one_float, :unique_content, :array_class_name, :original_name,
+    :owner_class
 
   def initialize(name, original_name='', data_type=nil) 
     @name = name
@@ -11,6 +13,6 @@ class PropertyInfo
   end
 
   def to_s
-    "property.name: #{@name} property.data_type: #{@data_type} "
+    "property.name: #{@name} property.data_type: #{@data_type} property.owner_class: #{@owner_class}"
   end
 end

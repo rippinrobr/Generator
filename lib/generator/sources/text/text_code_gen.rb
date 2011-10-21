@@ -5,12 +5,13 @@ require "generator/languages/domain_src_generator"
 
 module Generator
   class Engine
-    attr_accessor :class_def
+    attr_accessor :class_def, :child_classes
 
     def initialize(options, output=STDOUT)
       @options = options
       @output = output
       @domain_classes_to_create = []
+      @child_classes = []
       @domain_to_model = Hash.new
 
       parse_input_file
