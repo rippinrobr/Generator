@@ -1,6 +1,7 @@
 class RecordClass
   attr_accessor :properties, :name, :create_service_class, 
-    :has_at_least_one_class_property, :child_classes, :parent_class
+    :has_at_least_one_class_property, :child_classes, :parent_class,
+    :parent_column_id
 
   def initialize(name='')
     @properties = []
