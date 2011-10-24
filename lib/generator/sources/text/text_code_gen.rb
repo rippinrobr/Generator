@@ -32,7 +32,9 @@ module Generator
   private 
     def create_model(view_obj)
       model_type, domains_to_create = @model_gen.generate(@class_def, @options)
+      puts "[text_code_gen.create_model] model_type: #{model_type.class}"
       @domain_classes_to_create << domains_to_create
+      [model_type]
     end
 
     def parse_input_file
