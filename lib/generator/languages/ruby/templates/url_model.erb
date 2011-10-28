@@ -15,8 +15,16 @@ class <%= @model_class_def.name.camelize %>
     @<%= r.name.clean_name %> = [] 
     parsed_data["<%= r.original_name %>"].each do |rec|
       @<%= r.name %> << <%= r.name.capitalize %>Model.new(rec)
+      
     end
-    <% elsif r.data_type == "class" %>@<%= r.name.clean_name %> = <%= r.name.gsub("_","").capitalize %>Model.new(parsed_data["<%= r.original_name %>"])<% else %> @<%= r.name %> = parsed_data["<%= r.original_name %>"]<% end -%> 
+    <% elsif r.data_type == "class" %>@<%= r.name.clean_name %> = <%= r.name.gsub("_","").capitalize %>Model.new(parsed_data["<%= r.original_name %>"])<% else %>
+#Add the code chunk here <%= r.data_source_field_name %>
+      <% if r.data_source_field_name == r.original_name %>
+       @<%= r.name %> = parsed_data["<%= r.original_name %>"]
+      <% else %>
+       @<%= r.name %> = parsed_data["<%= r.original_name %>"]["<%= r.data_source_field_name %>"]
+       <% end %>
+      <% end -%> 
    <% end -%>
   <% end -%>
   end

@@ -13,14 +13,28 @@ class RecordClass
 
   def check_for_classes_to_create
     classes = []
-    @properties.each do |prop|
-      if prop.data_type == "class" || prop.data_type == "array"
-        prop.owner_class = @name
-        classes << prop
+    
+    if @properties.length > 1
+      @properties.each do |prop|
+        if prop.data_type == "class" || prop.data_type == "array"
+          prop.owner_class = @name
+          classes << prop
+        end
       end
     end
 
     classes
+  end
+
+  def find_child_class_by_name(child_class_name)
+    puts "in find_child_class_by_name"
+    @child_classes.map do |cls|
+      if cls.name == child_class_name
+        #puts "found a match! #{cls}"
+        return cls
+      end
+    end
+    nil
   end
 
   def to_s

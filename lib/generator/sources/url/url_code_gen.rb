@@ -10,13 +10,13 @@ module Generator
   class Engine
     attr_accessor :class_def, :child_classes
 
-    def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT)
+    def initialize(options, url_mgr = Generator::Utils::UrlManager.new() , output=STDOUT, model_gen = ModelGenerator.new)
       load File.join(File.dirname(__FILE__), "../../languages/#{options[:language]}/string.rb")
 
       @options = options
       @output = output
       @url_mgr = url_mgr
-      @model_gen = ModelGenerator.new
+      @model_gen = model_gen
       @classes_queue = []
       @child_classes = []
       @my_class_counter = 0
@@ -65,6 +65,27 @@ module Generator
       record.parent_class = parent_class
 
       class_def = convert_hash_to_class(parsed_data, record)
+      if class_def.properties.length < 2
+        parent = class_def.parent_class
+        if class_def.properties.length == 1
+          parent.properties.map do |p|
+            if p.data_type == "class"
+              p.data_type = class_def.properties[0].data_type
+              p.data_source_field_name = class_def.properties[0].data_source_field_name
+              puts p
+              break
+            end
+          end
+        else
+          parent.properties.map do |p|
+            if p.data_type == "class"
+                p.data_type = "string"
+                break
+            end
+          end
+        end
+        return @classes_queue 
+      end
 
       class_def.create_service_class = @classes_queue.length == 0
       check_data_types class_def
@@ -88,6 +109,7 @@ module Generator
 
     def load_parser
       @res = @url_mgr.get_page @options[:url]
+      
       content_type = @res.content_type.gsub(/\//,'_')
       
       if !@options[:content_type].nil?
@@ -103,12 +125,14 @@ module Generator
     end
 
     def convert_hash_to_class(data, class_def)
-      # class_def = class_def
       class_def.name = set_class_name(class_def.name) 
       
       if data.respond_to?('keys')
          data.keys.each do |field| 
-          prop = PropertyInfo.new field.dup().clean_name, field.dup()
+          prop = PropertyInfo.new ''
+          prop.data_source_field_name = field.to_s
+          prop.name = field.to_s.dup().clean_name
+          prop.original_name = field.to_s.dup()
           prop.unique_content << data[field] unless prop.unique_content.include?(data[field])
           get_property_data_type prop 
           class_def.properties << prop

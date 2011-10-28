@@ -5,3 +5,5 @@ debug.txt
 Generator*.gem
 server/
 \#debug.txt\#
+\#*\#
+*~
