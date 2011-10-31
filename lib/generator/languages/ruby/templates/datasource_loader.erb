@@ -2,9 +2,10 @@
 # Generated on <%= Time.new.inspect -%> by <%= Etc.getlogin %>
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
-require 'active_record'
-require '<%= @options[:service_class_path] %>'
-require '<%= @options[:migration_model_dir] %>/<%= @options[:db_table_name] %>_source'
+require 'active_record'  <% classes_to_gen = @options[:db_table_names].keys %>
+require '<%= @options[:service_class_path] %>'<% classes_to_gen.map do |cls| %>
+require '<%= @options[:migration_model_dir] %>/<%= cls %>_source'
+<%end%>
 
 load File.join(File.dirname(__FILE__), 'ar_connection.rb')
 
@@ -13,9 +14,36 @@ svc = <%= @options[:service_class_name] -%>.new '<%= @options[:source_uri] -%>'
 start_index = <%= @options[:start_index] %>
 
 @data.slice(start_index, @data.length - start_index).map do |d|
+ <% puts "@options[:model_class_name] == classes_to_gen[0].camelize ==> #{@options[:model_class_name]} == #{classes_to_gen[0].camelize}" %>
+ <% if @options[:model_class_name] == classes_to_gen[0].camelize -%>
   ar = <%= @options[:model_class_name] %>Source.new
-  <% @columns.map do |col| -%>
+  <% @options[:db_table_names][classes_to_gen[0]].map do |col| -%>
   ar.<%= col.db_name %> = d.<%= col.class_prop_name %>
-  <% end %> 
+  <% end %>
   ar.save
+<% else -%>
+  <% classes_to_gen.map do |cls| %><%parent_column_id =  @options[:db_table_names][cls][0].parent_column_id 
+    parent_column = DataSourceColumn.find(parent_column_id) 
+    parent_prop_name = parent_column.source_name 
+    parent_data_type = parent_column.source_data_type -%>
+      
+     <% if parent_data_type != "array" -%>
+      <% @options[:db_table_names][cls].map do |col| -%>
+        ar = <%= cls.camelize %>Source.new  
+        ar.<%= col.db_name %> = d.<%= parent_prop_name %>.<%= col.class_prop_name %>
+      <% end %>
+         ar.save
+     <% else %>
+       d.<%= parent_prop_name %>.map do |val| 
+         ar = <%= cls.camelize %>Source.new  
+         <% @options[:db_table_names][cls].map do |col| -%>
+         ar.<%= col.db_name %> = val.<%= col.class_prop_name %>
+         <% end -%>
+         ar.save
+       end
+   <% end %>
+  
+  <% end %>
+<% end %> 
+ 
 end

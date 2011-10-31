@@ -31,9 +31,11 @@ class MigrationGenerator
   end
 
   def generate_ar_model
-    process_template("templates/ar_model.erb", 
+    @options[:db_table_names].map do |dtn_and_cols| 
+      process_ar_template("templates/ar_model.erb", 
                      @options[:migration_model_dir],
-                     "#{@options[:db_table_name]}_source")
+                     "#{dtn_and_cols[0]}_source")
+    end
   end
 
   def generate_ar_connection
@@ -50,6 +52,15 @@ class MigrationGenerator
 
 private
   def process_template(template_path, output_dir, file_name)
+    template = File.join(File.dirname(__FILE__),
+                         template_path)
+    b = binding
+    engine = ERB.new(File.read(template), 0, '-%>')
+    write_class_file(output_dir, file_name, engine.result(b), "rb")
+  end
+
+  def process_ar_template(template_path, output_dir, file_name)
+    @ar_class_name = file_name.camelize
     template = File.join(File.dirname(__FILE__),
                          template_path)
     b = binding

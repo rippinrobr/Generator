@@ -5,6 +5,7 @@ require 'generator/sources/url/url_code_gen'
 
 puts Dir.pwd
 
+module Ruby
 class UrlCodeGenTest < Test::Unit::TestCase
 
   def setup 
@@ -139,20 +140,18 @@ class UrlCodeGenTest < Test::Unit::TestCase
   "millis" : 2
 }
 )
+  @options = Hash.new
+  @options[:input_type] = "url"
+  @options[:language] = "ruby"
+  @options[:header] = false
+  @options[:source_file] = "http://127.0.0.1:28017/bdb/franchises/"
+  @options[:url] = "http://127.0.0.1:28017/bdb/franchises/"
+  @options[:content_type] = "application_json"
+  @options[:model_output_dir] = "/tmp"
+  @options[:model_class_name] = "test_model"
 end
 
- def test_should_return_two_models_to_create  
-   #{:input_type=>"url", :language=>"ruby", :header=>false, :source_file=>"http://127.0.0.1:28017/bdb/franchises/", :url=>"http://127.0.0.1:28017/bdb/franchises/", :content_type=>"application_json", :model_output_dir=>"/home/rob/code/pipeline/app/genned_code/3", :service_output_dir=>"/home/rob/code/pipeline/app/genned_code/3", :delim=>""}
-   options = Hash.new
-   options[:input_type] = "url"
-   options[:language] = "ruby"
-   options[:header] = false
-   options[:source_file] = "http://127.0.0.1:28017/bdb/franchises/"
-   options[:url] = "http://127.0.0.1:28017/bdb/franchises/"
-   options[:content_type] = "application_json"
-   options[:model_output_dir] = "/tmp"
-   options[:model_class_name] = "test_model"
-   
+ def test_should_return_create_two_models
    res = mock()
    res.expects(:content_type).at_least_once.returns('text/plain')
    res.expects(:body).returns(@body_json)
@@ -160,13 +159,14 @@ end
    url_mgr = mock()
    url_mgr.expects(:get_page).returns(res)
    
-   gen = Generator::Engine.new options, url_mgr
+   gen = Generator::Engine.new @options, url_mgr
    classes = gen.create_models
    classes.map do |c|
-   #  puts c.name
-      puts c.properties
+     full_path = "#{@options[:model_output_dir]}/#{c.name}.rb"
+     assert(File.exists?(full_path), "#{full_path} was not created")
    end 
    assert_equal(2, classes.length)
   
  end
+end
 end
