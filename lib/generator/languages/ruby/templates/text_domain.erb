@@ -3,6 +3,7 @@
 # Using Generator 0.1.1
 #---------------------------------------------------------------------
 require '<%= @settings.output_settings[:model_output_dir]%>/<%= @settings.class_name -%>'
+require 'csv'
 
 class <%= @domain_class_name.camelize %>
   def initialize(gen_source = '')
@@ -14,11 +15,11 @@ class <%= @domain_class_name.camelize %>
     raise "Cannot open a nil source" unless !@gen_source.nil?    
     
     begin
-      File.open(@gen_source) do |f|
-        while(line = f.readline)
-          line.chomp
-	  parts = line.gsub(/"/,'').split(',')
-
+     # File.open(@gen_source) do |f|
+        #while(line = f.readline)
+        #  line.chomp
+	#  parts = line.gsub(/"/,'').split(',')
+        CSV.foreach(@gen_source) do |parts|
 	  <% i = 0 -%>
   	  model = <%= @settings.class_name.clean_name.camelize -%>.new 
 	  <% @settings.properties.each do |col| -%>
@@ -26,7 +27,7 @@ class <%= @domain_class_name.camelize %>
 	  <% i += 1
 	  end %>
  	  @content << model
-        end
+        #end
       end 
     rescue Errno::ENOENT => e 
       puts "Unable to open source #{@gen_source}"

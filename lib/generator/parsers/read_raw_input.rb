@@ -2,6 +2,7 @@ require 'generator/utils/string'
 require 'generator/parsers/record_class'
 require 'generator/parsers/property_info'
 require 'pathname'
+require 'csv'
 
 class ReadRawInput
   attr_accessor :input_type, :location
@@ -31,6 +32,7 @@ class ReadRawInput
     
     @record_class.name = File.basename(@location).to_s.clean_name
     @record_class.name = @record_class.name.sub(".","_")
+    
     File.open(@location, "r") do |txt|
       first_time_through = true
 
@@ -95,7 +97,8 @@ class ReadRawInput
       end
     else
       (1..fields.length).each do |i| 
-	 @record_class.properties.push PropertyInfo.new PropertyUtils::generate_name i 
+         original_name = PropertyUtils::generate_name(i)
+	 @record_class.properties.push PropertyInfo.new(original_name, original_name)
       end	
     end	
   end
